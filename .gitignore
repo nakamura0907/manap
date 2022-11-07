@@ -1,0 +1,5 @@
+docs/dev/*
+node_modules/
+
+# app
+dist/*
