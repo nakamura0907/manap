@@ -3,6 +3,8 @@ import http from "http";
 import express from "express";
 import config from "@config/index";
 import errorHandling from "@frameworks/webserver/middlewares/errorHandling";
+import passport from "@/features/core/auth/passport";
+import { authRouter } from "@/frameworks/webserver/router";
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +19,10 @@ const options: cors.CorsOptions = {
 };
 app.use(cors(options));
 
+app.use(passport.initialize());
+
 // ルーティング
+app.use("/api/v1", authRouter(express));
 
 // エラーハンドリング
 errorHandling(app);

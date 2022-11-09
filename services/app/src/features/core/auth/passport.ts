@@ -1,11 +1,17 @@
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
+import PrismaAuthRepository from "./repository/PrismaAuthRepository";
+import Exception from "@/util/exception/Exception";
+import { Strategy as LocalStrategy, IVerifyOptions } from "passport-local";
 import {
   Strategy as JwtStrategy,
   ExtractJwt,
-  StrategyOptions,
+  StrategyOptions as JwtStrategyOptions,
 } from "passport-jwt";
 import { JWT_SECRET_KEY } from "@/util/jwt";
+import { compareSync } from "@/util/hash";
+
+type DoneUser = ExpressRequestUser | false;
+type Done = (error: any, user?: DoneUser, options?: IVerifyOptions) => void;
 
 // デフォルト認証
 passport.use(
@@ -15,20 +21,31 @@ passport.use(
       passwordField: "password",
       session: false,
     },
-    (email, password, done) => {
-      if (email === "test@example.com" && password === "password") {
-        return done(null, { id: 1, email });
-      } else {
-        return done(null, false, {
-          message: "メールアドレスまたはパスワードが誤っています",
-        });
+    async (email, password, done: Done) => {
+      try {
+        // TODO: PrismaAuthRepositoryを変更できるようにする
+        // DIコンテナで何とかできないか？
+        const result = await new PrismaAuthRepository().loginByEmail(email);
+        if (!result)
+          return done(
+            new Exception("メールアドレスまたはパスワードが誤っています", 401)
+          );
+
+        if (!compareSync(password, result.credential))
+          return done(
+            new Exception("メールアドレスまたはパスワードが誤っています", 401)
+          );
+
+        return done(null, { id: result.id.value });
+      } catch (error) {
+        return done(error);
       }
     }
   )
 );
 
 // JWT認証
-const jwtOptions: StrategyOptions = {
+const jwtOptions: JwtStrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: JWT_SECRET_KEY,
 };
