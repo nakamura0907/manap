@@ -1,9 +1,9 @@
 import AuthCredential from "../domain/model/AuthCredential";
-import IPrismaAuthRepository from "../domain/repository/IPrismaAuthRepository";
+import IAuthRepository from "../domain/repository/IAuthRepository";
 import { GeneratedId } from "@/features/shared/Id";
 import { prisma } from "@/frameworks/database/prisma";
 
-class PrismaAuthRepository implements IPrismaAuthRepository {
+class PrismaAuthRepository implements IAuthRepository {
   async loginByEmail(email: string) {
     const result = await prisma.users_auths.findFirst({
       where: {
