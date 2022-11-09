@@ -1,5 +1,4 @@
 import passport from "passport";
-import PrismaAuthRepository from "./repository/PrismaAuthRepository";
 import Exception from "@/util/exception/Exception";
 import { Strategy as LocalStrategy, IVerifyOptions } from "passport-local";
 import {
@@ -9,6 +8,7 @@ import {
 } from "passport-jwt";
 import { JWT_SECRET_KEY } from "@/util/jwt";
 import { compareSync } from "@/util/hash";
+import { authRepository } from "@/container";
 
 type DoneUser = ExpressRequestUser | false;
 type Done = (error: any, user?: DoneUser, options?: IVerifyOptions) => void;
@@ -23,9 +23,7 @@ passport.use(
     },
     async (email, password, done: Done) => {
       try {
-        // TODO: PrismaAuthRepositoryを変更できるようにする
-        // DIコンテナで何とかできないか？
-        const result = await new PrismaAuthRepository().loginByEmail(email);
+        const result = await authRepository.loginByEmail(email);
         if (!result)
           return done(
             new Exception("メールアドレスまたはパスワードが誤っています", 401)
