@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  # app
+  app:
+    image: node:current-alpine
+    working_dir: /usr/src/app
+    volumes:
+      - ./services/app:/usr/src/app
+    command: [sh, -c, npm run start]
+    ports:
+      - 3001:3001
+
+  # mysql
+  mysql:
+    image: mysql:8.0-debian
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./services/mysql/data:/var/lib/mysql
+      - ./services/mysql/sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+
+  # phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin:apache
+    depends_on:
+      - mysql
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOSTS=mysql
+      - PMA_USER=user
+      - PMA_PASSWORD=password
+    ports:
+      - "3307:80"
+    volumes:
+      - ./services/phpmyadmin/sessions:/sessions

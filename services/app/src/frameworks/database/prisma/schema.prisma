@@ -1,0 +1,26 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id          Int           @id @default(autoincrement())
+  nickname    String        @db.VarChar(255)
+  users_auths users_auths[]
+}
+
+model users_auths {
+  id            Int    @id @default(autoincrement())
+  user_id       Int
+  identity_type String @db.VarChar(255)
+  identifier    String @db.Text
+  credential    String @db.Text
+  users         users  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "ref_users_auths_user_id")
+
+  @@index([user_id], map: "ref_users_auths_user_id")
+}

@@ -1,4 +1,7 @@
 docs/dev/*
 node_modules/
-
 *.log
+.env
+
+# mysql
+services/mysql/data/
