@@ -11,7 +11,18 @@ export const authRouter = (express: typeof Express) => {
     "/auth/login",
     passport.authenticate("local", {
       session: false,
+      scope: ["user:email"],
     }),
+    controller.login
+  );
+
+  router.get(
+    "/auth/github",
+    passport.authenticate("github", { session: false })
+  );
+  router.get(
+    "/auth/github/callback",
+    passport.authenticate("github", { session: false }),
     controller.login
   );
 
