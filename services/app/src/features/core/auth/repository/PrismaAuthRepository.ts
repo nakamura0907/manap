@@ -20,8 +20,75 @@ class PrismaAuthRepository implements IAuthRepository {
     });
     if (!result) return result;
 
-    const id = new GeneratedId(result.users.id);
-    return new AuthCredential(id, result.identifier, result.credential);
+    return this.createAuthCredential(
+      result.users.id,
+      result.identifier,
+      result.credential
+    );
+  }
+
+  async authByGithub(username: string, githubId: string, accessToken: string) {
+    // GithubIdで検索
+    const result = await prisma.users_auths.findFirst({
+      where: {
+        identity_type: "github",
+        identifier: githubId,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    if (result) {
+      // 見つかった場合、アクセストークンを更新
+      await prisma.users_auths.update({
+        where: {
+          id: result.id,
+        },
+        data: {
+          credential: accessToken,
+        },
+      });
+
+      return this.createAuthCredential(
+        result.users.id,
+        result.identifier,
+        accessToken
+      );
+    }
+
+    // 存在しない場合、新規作成
+    const user = await prisma.users.create({
+      data: {
+        nickname: username,
+      },
+    });
+    console.log(user);
+    const auth = await prisma.users_auths.create({
+      data: {
+        identity_type: "github",
+        identifier: githubId,
+        credential: accessToken,
+        users: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
+    return this.createAuthCredential(user.id, auth.identifier, auth.credential);
+  }
+
+  private createAuthCredential(
+    id: number,
+    identifier: string,
+    credential: string
+  ) {
+    const generatedId = new GeneratedId(id);
+    return new AuthCredential(generatedId, identifier, credential);
   }
 }
 
