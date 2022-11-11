@@ -18,6 +18,10 @@ class AuthCredential<T extends Id> {
     return this._id;
   }
 
+  get identifier() {
+    return this._identifier;
+  }
+
   get credential() {
     return this._credential;
   }
