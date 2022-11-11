@@ -1,4 +1,12 @@
 ### メールアドレスサインアップ
+POST http://localhost:3001/api/v1/auth/signup
+Content-Type: application/json
+
+{
+  "nickname": "test",
+  "email": "test@example.com",
+  "password": "password"
+}
 
 ### メールアドレスログイン
 POST http://localhost:3001/api/v1/auth/login

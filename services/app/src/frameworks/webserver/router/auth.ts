@@ -7,7 +7,7 @@ export const authRouter = (express: typeof Express) => {
 
   const controller = authController();
 
-  router.post("/signup", controller.signup);
+  router.post("/auth/signup", controller.signup);
 
   router.post(
     "/auth/login",
