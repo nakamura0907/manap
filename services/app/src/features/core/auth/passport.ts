@@ -65,12 +65,7 @@ passport.use(
       clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "INVALID_CLIENT_SECRET",
       callbackURL: "http://localhost:3001/api/v1/auth/github/callback",
     },
-    async (
-      accessToken: string,
-      refreshToken: string,
-      profile: any,
-      done: Done
-    ) => {
+    async (accessToken: string, _: string, profile: any, done: Done) => {
       try {
         const result = await authRepository.authByGithub(
           profile.username,

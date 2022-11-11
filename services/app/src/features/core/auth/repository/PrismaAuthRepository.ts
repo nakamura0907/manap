@@ -1,9 +1,33 @@
 import AuthCredential from "../domain/model/AuthCredential";
 import IAuthRepository from "../domain/repository/IAuthRepository";
+import EmailAuthCredential from "../domain/model/EmailAuthCredential";
+import NickName from "../domain/value/Nickname";
 import { GeneratedId } from "@/features/shared/Id";
 import { prisma } from "@/frameworks/database/prisma";
 
 class PrismaAuthRepository implements IAuthRepository {
+  async signupByEmail(nickName: NickName, credential: EmailAuthCredential) {
+    await prisma.$transaction(async (prisma) => {
+      const user = await prisma.users.create({
+        data: {
+          nickname: nickName.value,
+        },
+      });
+      await prisma.users_auths.create({
+        data: {
+          identity_type: "email",
+          identifier: credential.email,
+          credential: credential.password,
+          users: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+    });
+  }
+
   async loginByEmail(email: string) {
     const result = await prisma.users_auths.findFirst({
       where: {
