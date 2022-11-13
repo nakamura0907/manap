@@ -1,6 +1,6 @@
 import { GeneratedId, Id } from "@/features/shared/Id";
 
-class AuthCredential<T extends Id> {
+class AuthCredential<T extends Id = Id> {
   private readonly _id: T;
   private readonly _identifier: string;
   private readonly _credential: string;
