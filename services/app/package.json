@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.prod.js",
     "serve": "node dist/index.js",
     "prisma:generate": "prisma generate --schema ./src/frameworks/database/prisma/schema.prisma",
-    "prisma:pull": "prisma db pull --schema ./src/frameworks/database/prisma/schema.prisma",
+    "prisma:pull": "prisma db pull --schema ./src/frameworks/database/prisma/schema.prisma && npm run prisma:generate",
     "prisma:seed": "ts-node ./src/frameworks/database/prisma/seed.ts"
   },
   "keywords": [],

@@ -27,6 +27,10 @@ class Member<T extends Id = Id> {
   get role() {
     return this._role;
   }
+
+  setId(projectId: GeneratedId) {
+    return new Member(projectId, this._userId, this._role);
+  }
 }
 
 export default Member;

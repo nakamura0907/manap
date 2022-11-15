@@ -4,7 +4,7 @@ import express from "express";
 import config from "@config/index";
 import errorHandling from "@frameworks/webserver/middlewares/errorHandling";
 import passport from "@/features/core/auth/passport";
-import { authRouter } from "@/frameworks/webserver/router";
+import { authRouter, projectsRouter } from "@/frameworks/webserver/router";
 
 const app = express();
 const server = http.createServer(app);
@@ -22,7 +22,7 @@ app.use(cors(options));
 app.use(passport.initialize());
 
 // ルーティング
-app.use("/api/v1", authRouter(express));
+app.use("/api/v1", authRouter(express), projectsRouter(express));
 
 // エラーハンドリング
 errorHandling(app);

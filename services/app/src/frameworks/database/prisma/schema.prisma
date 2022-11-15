@@ -1,7 +1,7 @@
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
+  binaryTargets   = ["native"]
 }
 
 datasource db {
@@ -10,9 +10,10 @@ datasource db {
 }
 
 model users {
-  id          Int           @id @default(autoincrement())
-  nickname    String        @db.VarChar(255)
-  users_auths users_auths[]
+  id               Int                @id @default(autoincrement())
+  nickname         String             @db.VarChar(255)
+  projects_members projects_members[]
+  users_auths      users_auths[]
 }
 
 model users_auths {
@@ -24,4 +25,33 @@ model users_auths {
   users         users  @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "ref_users_auths_user_id")
 
   @@index([user_id], map: "ref_users_auths_user_id")
+}
+
+model projects {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  description      String             @db.VarChar(255)
+  updated_at       DateTime           @default(now()) @db.Timestamp(0)
+  delete_flag      Boolean            @default(false)
+  projects_members projects_members[]
+}
+
+model projects_members {
+  project_id  Int
+  user_id     Int
+  role_id     Int
+  delete_flag Boolean  @default(false)
+  projects    projects @relation(fields: [project_id], references: [id], onUpdate: Restrict, map: "ref_projects_members_project_id")
+  roles       roles    @relation(fields: [role_id], references: [id], onUpdate: Restrict, map: "ref_projects_members_role_id")
+  users       users    @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "ref_projects_members_user_id")
+
+  @@unique([project_id, user_id], map: "project_id")
+  @@index([role_id], map: "ref_projects_members_role_id")
+  @@index([user_id], map: "ref_projects_members_user_id")
+}
+
+model roles {
+  id               Int                @id @default(autoincrement())
+  name             String             @db.VarChar(50)
+  projects_members projects_members[]
 }

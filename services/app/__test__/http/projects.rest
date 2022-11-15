@@ -1,0 +1,8 @@
+### 新規プロジェクト作成
+POST http://localhost:3001/api/v1/projects
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "就職作品アプリ",
+}

@@ -1,14 +1,14 @@
 import Member from "./Member";
 import ProjectDetail from "./ProjectDetail";
-import { GeneratedId } from "@/features/shared/Id";
+import { GeneratedId, Id, NoneId } from "@/features/shared/Id";
 
-class Project {
+class Project<T extends Id = Id> {
   private readonly _detail: ProjectDetail;
   private readonly _members: Member[];
 
   static MAX_MEMBERS = 30;
 
-  constructor(detail: ProjectDetail, members: Member[]) {
+  constructor(detail: ProjectDetail<T>, members: Member<T>[]) {
     this._detail = detail;
     this._members = members;
   }
@@ -17,7 +17,7 @@ class Project {
     const detail = ProjectDetail.create(name, description);
     const member = Member.ADMINISTRATOR(userId);
 
-    return new Project(detail, [member]);
+    return new Project<NoneId>(detail, [member]);
   }
 
   get detail() {
@@ -26,6 +26,12 @@ class Project {
 
   get members() {
     return this._members;
+  }
+
+  setId(id: GeneratedId) {
+    const detail = this._detail.setId(id);
+    const members = this._members.map((member) => member.setId(id));
+    return new Project<GeneratedId>(detail, members);
   }
 
   isMemberExist(userId: GeneratedId) {

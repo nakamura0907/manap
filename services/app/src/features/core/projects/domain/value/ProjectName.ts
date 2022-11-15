@@ -7,6 +7,7 @@ class ProjectName extends ValueObject<string> {
   }
 
   static create(value: string) {
+    if (!value) throw new Exception("プロジェクト名を入力してください", 400);
     if (value.length < 3 || value.length > 255)
       throw new Exception(
         "プロジェクト名は3文字以上255文字以下で入力してください",

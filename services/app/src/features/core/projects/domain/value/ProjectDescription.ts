@@ -7,6 +7,7 @@ class ProjectDescription extends ValueObject<string> {
   }
 
   static create(value: string) {
+    if (!value) return new ProjectDescription("");
     if (value.length > 255)
       throw new Exception(
         "プロジェクトの説明は255文字以下で入力してください",

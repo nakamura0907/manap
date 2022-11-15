@@ -1,6 +1,6 @@
 import ProjectDescription from "../value/ProjectDescription";
 import ProjectName from "../value/ProjectName";
-import { Id, NoneId } from "@/features/shared/Id";
+import { GeneratedId, Id, NoneId } from "@/features/shared/Id";
 
 class ProjectDetail<T extends Id = Id> {
   private readonly _id: T;
@@ -31,6 +31,10 @@ class ProjectDetail<T extends Id = Id> {
 
   get description() {
     return this._description;
+  }
+
+  setId(id: GeneratedId) {
+    return new ProjectDetail(id, this._name, this._description);
   }
 }
 
