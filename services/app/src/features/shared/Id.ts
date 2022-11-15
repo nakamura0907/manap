@@ -21,6 +21,10 @@ export class GeneratedId {
   get value() {
     return this._value;
   }
+
+  equals(other: GeneratedId) {
+    return this.value === other.value;
+  }
 }
 
 export class NoneId {

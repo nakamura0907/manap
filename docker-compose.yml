@@ -7,6 +7,7 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./services/app:/usr/src/app
+      - ./services/common:/usr/src/common
     command: [sh, -c, npm run start]
     ports:
       - 3001:3001

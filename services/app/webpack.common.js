@@ -36,6 +36,7 @@ module.exports = {
       "@features": path.join(__dirname, "/src/features/"),
       "@frameworks": path.join(__dirname, "/src/frameworks/"),
       "@util": path.join(__dirname, "/src/util/"),
+      "@common": path.join(__dirname, "/../common/"),
     },
   },
 };
