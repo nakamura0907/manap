@@ -12,6 +12,11 @@ export const projectsRouter = (express: typeof Express) => {
     passport.authenticate("jwt", { session: false }),
     controller.create
   );
+  router.get(
+    "/projects/:id",
+    passport.authenticate("jwt", { session: false }),
+    controller.fetchById
+  );
 
   return router;
 };
