@@ -6,6 +6,9 @@ import { prisma } from "@/frameworks/database/prisma";
 import { now } from "@/util/date";
 
 class PrismaProjectsRepository implements IProjectsRepository {
+  fetchById(projectId: GeneratedId): Promise<Project<GeneratedId>> {
+    throw new Error("Method not implemented.");
+  }
   async create(project: Project<NoneId>) {
     const owner = project.members[0];
     if (!owner)
