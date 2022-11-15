@@ -9,6 +9,10 @@ type ProjectController = {
    * 新規プロジェクト作成
    */
   create: (req: Request, res: Response, next: NextFunction) => void;
+  /**
+   * プロジェクトIDからプロジェクトを取得
+   */
+  fetchById: (req: Request, res: Response, next: NextFunction) => void;
 };
 
 const projectController = (): ProjectController => {
@@ -34,7 +38,20 @@ const projectController = (): ProjectController => {
     })().catch(next);
   };
 
-  return { create };
+  const fetchById = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      const projectId = req.params.id;
+      const userId = req.user?.id;
+
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      console.log(projectId);
+
+      res.status(200).send({});
+    })().catch(next);
+  };
+
+  return { create, fetchById };
 };
 
 export default projectController;
