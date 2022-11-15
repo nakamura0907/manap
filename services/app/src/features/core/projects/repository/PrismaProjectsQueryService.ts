@@ -1,9 +1,33 @@
-import { prisma } from "@/frameworks/database/prisma";
 import Exception from "@/util/exception/Exception";
 import IProjectsQueryService from "../domain/repository/IProjectsQueryService";
-import { ProjectDTO } from "../query";
+import { prisma } from "@/frameworks/database/prisma";
+import { ProjectDTO, ProjectListItemDTO } from "../query";
 
 class PrismaProjectsQueryService implements IProjectsQueryService {
+  async fetchList(userId: number) {
+    const result = await prisma.projects.findMany({
+      where: {
+        delete_flag: false,
+        projects_members: {
+          some: {
+            user_id: userId,
+            delete_flag: false,
+          },
+        },
+      },
+      orderBy: {
+        updated_at: "desc",
+      },
+    });
+    return result.map((project) => {
+      return new ProjectListItemDTO(
+        project.id,
+        project.name,
+        project.description
+      );
+    });
+  }
+
   async fetchById(projectId: number) {
     const result = await prisma.projects.findFirst({
       where: {

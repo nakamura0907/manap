@@ -1,6 +1,7 @@
-import { ProjectDTO } from "../../query";
+import { ProjectDTO, ProjectListItemDTO } from "../../query";
 
 interface IProjectsQueryService {
+  fetchList(userId: number): Promise<ProjectListItemDTO[]>;
   fetchById(projectId: number): Promise<ProjectDTO>;
 }
 

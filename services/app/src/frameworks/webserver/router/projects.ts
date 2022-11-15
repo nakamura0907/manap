@@ -7,11 +7,19 @@ export const projectsRouter = (express: typeof Express) => {
 
   const controller = projectController();
 
+  // TODO: 一つにまとめる
   router.post(
     "/projects",
     passport.authenticate("jwt", { session: false }),
     controller.create
   );
+  router.get(
+    "/projects",
+    passport.authenticate("jwt", { session: false }),
+    controller.fetchList
+  );
+  // ここまで
+
   router.get(
     "/projects/:id",
     passport.authenticate("jwt", { session: false }),
