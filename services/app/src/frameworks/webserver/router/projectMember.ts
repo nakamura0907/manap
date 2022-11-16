@@ -14,6 +14,13 @@ export const projectMemberRouter = (express: typeof Express) => {
       controller.fetchList
     );
 
+  router
+    .route("/members/:memberId")
+    .delete(
+      passport.authenticate("jwt", { session: false }),
+      controller.remove
+    );
+
   return router;
 };
 

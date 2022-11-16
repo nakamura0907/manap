@@ -1,5 +1,9 @@
 import Exception from "@/util/exception/Exception";
-import { projectsMembersQueryService, rolesRepository } from "@/container";
+import {
+  projectsMembersQueryService,
+  projectsMembersRepository,
+  rolesRepository,
+} from "@/container";
 import { GeneratedId } from "@/features/shared/Id";
 import { checkPermission } from "@common/role";
 import { Request, Response, NextFunction } from "express";
@@ -51,7 +55,32 @@ const projectMemberController = (): ProjectMemberController => {
 
   const update = (req: Request, res: Response, next: NextFunction) => {};
 
-  const remove = (req: Request, res: Response, next: NextFunction) => {};
+  const remove = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+      const reqTargetUserId = req.params.userId;
+
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      // 権限確認
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
+
+      if (!checkPermission(roleId, "member:remove", { roleId }))
+        throw new Exception("メンバーを削除する権限がありません", 403);
+
+      // プロジェクトメンバー削除
+      const myUserId = new GeneratedId(userId);
+      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
+      if (myUserId.equals(targetUserId))
+        throw new Exception("自身を削除することはできません", 400);
+
+      await projectsMembersRepository.remove(projectId, targetUserId);
+
+      res.status(200).end();
+    })().catch(next);
+  };
 
   return { add, fetchList, update, remove };
 };

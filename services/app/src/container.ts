@@ -2,7 +2,9 @@ import { container } from "tsyringe";
 import IAuthRepository from "./features/core/auth/domain/repository/IAuthRepository";
 import PrismaAuthRepository from "./features/core/auth/repository/PrismaAuthRepository";
 import IProjectsMembersQueryService from "./features/core/project-member/domain/repository/IProjectsMembersQueryService";
+import IProjectsMembersRepository from "./features/core/project-member/domain/repository/IProjectsMembersRepository";
 import PrismaProjectsMembersQueryService from "./features/core/project-member/repository/PrismaProjectsMembersQueryService";
+import PrismaProjectsMembersRepository from "./features/core/project-member/repository/PrismaProjectsMembersRepository";
 import IProjectsQueryService from "./features/core/project/domain/repository/IProjectsQueryService";
 import IProjectsRepository from "./features/core/project/domain/repository/IProjectsRepository";
 import PrismaProjectsQueryService from "./features/core/project/repository/PrismaProjectsQueryService";
@@ -21,6 +23,9 @@ container.register("projectsQueryService", {
   useClass: PrismaProjectsQueryService,
 });
 
+container.register("projectsMembersRepository", {
+  useClass: PrismaProjectsMembersRepository,
+});
 container.register("projectsMembersQueryService", {
   useClass: PrismaProjectsMembersQueryService,
 });
@@ -38,6 +43,8 @@ export const projectsQueryService = container.resolve<IProjectsQueryService>(
   "projectsQueryService"
 );
 
+export const projectsMembersRepository =
+  container.resolve<IProjectsMembersRepository>("projectsMembersRepository");
 export const projectsMembersQueryService =
   container.resolve<IProjectsMembersQueryService>(
     "projectsMembersQueryService"
