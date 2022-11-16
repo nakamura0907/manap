@@ -39,8 +39,8 @@ export const ROLE_LIST: RoleList = {
 /**
  * パーミッション
  */
-const permission = ["projects:remove"] as const;
-type Permission = typeof permission;
+const permission = ["projects:update", "projects:remove"] as const;
+export type Permission = typeof permission;
 
 type Rules = {
   [key in typeof ROLE_NAME[number]]: {
@@ -56,11 +56,11 @@ type Rules = {
  */
 export const rules: Rules = {
   ADMINISTRATOR: {
-    static: ["projects:remove"],
+    static: ["projects:update", "projects:remove"],
     dynamic: {},
   },
   LEADER: {
-    static: [],
+    static: ["projects:update"],
     dynamic: {},
   },
   DEVELOPER: {

@@ -1,9 +1,14 @@
 import Exception from "@/util/exception/Exception";
 import Project from "./domain/model/Project";
+import ProjectDetail from "./domain/model/ProjectDetail";
 import { Request, Response, NextFunction } from "express";
 import { GeneratedId } from "@/features/shared/Id";
-import { projectsQueryService, projectsRepository } from "@/container";
-import ProjectDetail from "./domain/model/ProjectDetail";
+import {
+  projectsQueryService,
+  projectsRepository,
+  rolesRepository,
+} from "@/container";
+import { checkPermission } from "@common/role";
 
 type ProjectController = {
   /**
@@ -98,12 +103,12 @@ const projectController = (): ProjectController => {
 
       if (!userId) throw new Exception("認証に失敗しました", 401);
 
-      // 権限があるか確認
-      /**
-       * TODO: 権限があるか確認する
-       * TODO: ミドルウェアとして分離する？？？
-       */
+      // 権限確認
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
+
+      if (!checkPermission(roleId, "projects:update"))
+        throw new Exception("プロジェクトを更新する権限がありません", 403);
 
       // プロジェクト更新
       const validatedProject = ProjectDetail.create(name, description);
