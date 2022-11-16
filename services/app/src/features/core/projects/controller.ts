@@ -51,7 +51,11 @@ const projectController = (): ProjectController => {
       const result = await projectsQueryService.fetchList(userId);
 
       res.status(200).send({
-        projects: result,
+        projects: result.map((project) => ({
+          id: project.id,
+          name: project.name,
+          description: project.description,
+        })),
       });
     })().catch(next);
   };
