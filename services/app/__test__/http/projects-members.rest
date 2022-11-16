@@ -1,0 +1,6 @@
+@projectId = 2
+
+### プロジェクトメンバー一覧取得
+GET http://localhost:3001/api/v1/projects/{{projectId}}/members
+Content-Type: application/json
+Authorization: Bearer {{token}}

@@ -5,7 +5,6 @@ import { prisma } from "@/frameworks/database/prisma";
 
 class PrismaRolesRepository implements IRolesRepository {
   async fetchRoleId(projectId: GeneratedId, userId: number) {
-    // プロジェクトが存在するか
     const project = await prisma.projects.findFirst({
       where: {
         id: projectId.value,

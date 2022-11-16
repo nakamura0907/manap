@@ -87,13 +87,14 @@ const projectController = (): ProjectController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const result = await projectsQueryService.fetchById(projectId.value);
 
-      if (!result.members.find((member) => member.userId === userId))
-        throw new Exception("プロジェクトに参加していません", 403);
+      const member = result.members.find((member) => member.userId === userId);
+      if (!member) throw new Exception("プロジェクトに参加していません", 403);
 
       res.status(200).send({
         id: result.id,
         name: result.name,
         description: result.description,
+        roleId: member.role.id,
         members: result.members,
       });
     })().catch(next);
@@ -111,7 +112,7 @@ const projectController = (): ProjectController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const roleId = await rolesRepository.fetchRoleId(projectId, userId);
 
-      if (!checkPermission(roleId, "projects:update"))
+      if (!checkPermission(roleId, "project:update"))
         throw new Exception("プロジェクトを更新する権限がありません", 403);
 
       // プロジェクト更新
@@ -139,7 +140,7 @@ const projectController = (): ProjectController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const roleId = await rolesRepository.fetchRoleId(projectId, userId);
 
-      if (!checkPermission(roleId, "projects:remove"))
+      if (!checkPermission(roleId, "project:remove"))
         throw new Exception("プロジェクトを削除する権限がありません", 403);
 
       // プロジェクト削除

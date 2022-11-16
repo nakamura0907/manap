@@ -1,19 +1,19 @@
 import type Express from "express";
 import passport from "@/features/core/auth/passport";
-import projectController from "@/features/core/projects/controller";
+import projectController from "@/features/core/project/controller";
 
-export const projectsRouter = (express: typeof Express) => {
+export const projectRouter = (express: typeof Express) => {
   const router = express.Router();
 
   const controller = projectController();
 
   router
-    .route("/projects")
+    .route("/")
     .get(passport.authenticate("jwt", { session: false }), controller.fetchList)
     .post(passport.authenticate("jwt", { session: false }), controller.create);
 
   router
-    .route("/projects/:id")
+    .route("/:id")
     .get(passport.authenticate("jwt", { session: false }), controller.fetchById)
     .put(passport.authenticate("jwt", { session: false }), controller.update)
     .delete(

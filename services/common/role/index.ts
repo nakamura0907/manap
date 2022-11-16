@@ -39,7 +39,7 @@ export const ROLE_LIST: RoleList = {
 /**
  * パーミッション
  */
-const permission = ["projects:update", "projects:remove"] as const;
+const permission = ["project:update", "project:remove", "member:read"] as const;
 export type Permission = typeof permission;
 
 type Rules = {
@@ -56,19 +56,19 @@ type Rules = {
  */
 export const rules: Rules = {
   ADMINISTRATOR: {
-    static: ["projects:update", "projects:remove"],
+    static: ["project:update", "project:remove", "member:read"],
     dynamic: {},
   },
   LEADER: {
-    static: ["projects:update"],
+    static: ["project:update", "member:read"],
     dynamic: {},
   },
   DEVELOPER: {
-    static: [],
+    static: ["member:read"],
     dynamic: {},
   },
   CLIENT: {
-    static: [],
+    static: ["member:read"],
     dynamic: {},
   },
 };
