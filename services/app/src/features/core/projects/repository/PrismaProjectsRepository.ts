@@ -4,11 +4,9 @@ import Exception from "@/util/exception/Exception";
 import { GeneratedId, NoneId } from "@/features/shared/Id";
 import { prisma } from "@/frameworks/database/prisma";
 import { now } from "@/util/date";
+import ProjectDetail from "../domain/model/ProjectDetail";
 
 class PrismaProjectsRepository implements IProjectsRepository {
-  fetchById(projectId: GeneratedId): Promise<Project<GeneratedId>> {
-    throw new Error("Method not implemented.");
-  }
   async create(project: Project<NoneId>) {
     const owner = project.members[0];
     if (!owner)
@@ -31,6 +29,19 @@ class PrismaProjectsRepository implements IProjectsRepository {
     });
     const id = new GeneratedId(result.id);
     return project.setId(id);
+  }
+
+  async update(project: ProjectDetail<GeneratedId>) {
+    await prisma.projects.update({
+      where: {
+        id: project.id.value,
+      },
+      data: {
+        name: project.name.value,
+        description: project.description.value,
+        updated_at: now(),
+      },
+    });
   }
 }
 

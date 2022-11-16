@@ -12,11 +12,10 @@ export const projectsRouter = (express: typeof Express) => {
     .get(passport.authenticate("jwt", { session: false }), controller.fetchList)
     .post(passport.authenticate("jwt", { session: false }), controller.create);
 
-  router.get(
-    "/projects/:id",
-    passport.authenticate("jwt", { session: false }),
-    controller.fetchById
-  );
+  router
+    .route("/projects/:id")
+    .get(passport.authenticate("jwt", { session: false }), controller.fetchById)
+    .put(passport.authenticate("jwt", { session: false }), controller.update);
 
   return router;
 };
