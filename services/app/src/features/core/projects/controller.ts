@@ -10,6 +10,10 @@ type ProjectController = {
    */
   create: (req: Request, res: Response, next: NextFunction) => void;
   /**
+   * ログインユーザーが参加しているプロジェクト一覧を取得
+   */
+  fetchList: (req: Request, res: Response, next: NextFunction) => void;
+  /**
    * プロジェクトIDからプロジェクトを取得
    */
   fetchById: (req: Request, res: Response, next: NextFunction) => void;
@@ -38,6 +42,24 @@ const projectController = (): ProjectController => {
     })().catch(next);
   };
 
+  const fetchList = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      const userId = req.user?.id;
+
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const result = await projectsQueryService.fetchList(userId);
+
+      res.status(200).send({
+        projects: result.map((project) => ({
+          id: project.id,
+          name: project.name,
+          description: project.description,
+        })),
+      });
+    })().catch(next);
+  };
+
   const fetchById = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       const reqProjectId = req.params.id;
@@ -54,21 +76,12 @@ const projectController = (): ProjectController => {
         id: result.id,
         name: result.name,
         description: result.description,
-        members: result.members.map((member) => {
-          return {
-            userId: member.userId,
-            name: member.name,
-            role: {
-              id: member.role.id,
-              name: member.role.name,
-            },
-          };
-        }),
+        members: result.members,
       });
     })().catch(next);
   };
 
-  return { create, fetchById };
+  return { create, fetchById, fetchList };
 };
 
 export default projectController;
