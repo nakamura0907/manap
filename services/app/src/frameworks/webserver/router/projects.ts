@@ -15,7 +15,11 @@ export const projectsRouter = (express: typeof Express) => {
   router
     .route("/projects/:id")
     .get(passport.authenticate("jwt", { session: false }), controller.fetchById)
-    .put(passport.authenticate("jwt", { session: false }), controller.update);
+    .put(passport.authenticate("jwt", { session: false }), controller.update)
+    .delete(
+      passport.authenticate("jwt", { session: false }),
+      controller.remove
+    );
 
   return router;
 };

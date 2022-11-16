@@ -43,6 +43,17 @@ class PrismaProjectsRepository implements IProjectsRepository {
       },
     });
   }
+
+  async remove(projectId: GeneratedId) {
+    await prisma.projects.update({
+      where: {
+        id: projectId.value,
+      },
+      data: {
+        delete_flag: true,
+      },
+    });
+  }
 }
 
 export default PrismaProjectsRepository;

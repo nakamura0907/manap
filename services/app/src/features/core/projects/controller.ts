@@ -27,6 +27,10 @@ type ProjectController = {
    * プロジェクトIDからプロジェクトを更新
    */
   update: (req: Request, res: Response, next: NextFunction) => void;
+  /**
+   * プロジェクトIDからプロジェクトを削除
+   */
+  remove: (req: Request, res: Response, next: NextFunction) => void;
 };
 
 const projectController = (): ProjectController => {
@@ -124,7 +128,28 @@ const projectController = (): ProjectController => {
     })().catch(next);
   };
 
-  return { create, fetchById, fetchList, update };
+  const remove = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      const reqProjectId = req.params.id;
+      const userId = req.user?.id;
+
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      // 権限確認
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
+
+      if (!checkPermission(roleId, "projects:remove"))
+        throw new Exception("プロジェクトを削除する権限がありません", 403);
+
+      // プロジェクト削除
+      await projectsRepository.remove(projectId);
+
+      res.status(200).end();
+    })().catch(next);
+  };
+
+  return { create, fetchById, fetchList, update, remove };
 };
 
 export default projectController;
