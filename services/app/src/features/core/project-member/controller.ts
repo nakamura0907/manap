@@ -61,26 +61,26 @@ const projectMemberController = (): ProjectMemberController => {
       const reqProjectId = req.params.projectId;
       const reqTargetUserId = req.params.userId;
 
+      // バリデーション
+
       if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
+      const myUserId = new GeneratedId(userId);
+      if (myUserId.equals(targetUserId))
+        throw new Exception("自分を削除することはできません", 400);
 
       // 権限確認
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
-      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
 
-      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
-      const targetRoleId = await rolesRepository.fetchRoleId(
-        projectId,
-        targetUserId.value
-      );
+      const roles = await rolesRepository.fetchRoleList(projectId);
+      const roleId = roles.getRole(userId);
+      const targetRoleId = roles.getRole(targetUserId.value);
 
       if (!checkPermission(roleId, "member:remove", { targetRoleId }))
         throw new Exception("メンバーを削除する権限がありません", 403);
 
       // プロジェクトメンバー削除
-      const myUserId = new GeneratedId(userId);
-      if (myUserId.equals(targetUserId))
-        throw new Exception("自身を削除することはできません", 400);
-
       await projectsMembersRepository.remove(projectId, targetUserId);
 
       res.status(200).end();
