@@ -1,9 +1,18 @@
 @projectId = 2
 @userId = 1
 
+### プロジェクトメンバー追加
+POST http://localhost:3001/api/v1/projects/{{projectId}}/members
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 100,
+  "roleId": 2
+}
+
 ### プロジェクトメンバー一覧取得
 GET http://localhost:3001/api/v1/projects/{{projectId}}/members
-Content-Type: application/json
 Authorization: Bearer {{token}}
 
 ### プロジェクトメンバー削除

@@ -9,6 +9,7 @@ export const projectMemberRouter = (express: typeof Express) => {
 
   router
     .route("/members")
+    .post(passport.authenticate("jwt", { session: false }), controller.add)
     .get(
       passport.authenticate("jwt", { session: false }),
       controller.fetchList

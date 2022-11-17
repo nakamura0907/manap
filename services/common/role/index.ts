@@ -42,6 +42,7 @@ export const ROLE_LIST: RoleList = {
 const permission = [
   "project:update",
   "project:remove",
+  "member:add",
   "member:read",
   "member:remove",
 ] as const;
@@ -63,7 +64,10 @@ export const rules: Rules = {
   ADMINISTRATOR: {
     static: ["project:update", "project:remove", "member:read"],
     dynamic: {
-      "member:remove": (object: { [key: string]: any }) => {
+      "member:add": (object) => {
+        return object.targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+      "member:remove": (object) => {
         const { targetRoleId } = object;
         if (!targetRoleId) return false;
 
@@ -74,7 +78,12 @@ export const rules: Rules = {
   LEADER: {
     static: ["project:update", "member:read"],
     dynamic: {
-      "member:remove": (object: { [key: string]: any }) => {
+      "member:add": (object) => {
+        if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
+        if (object.targetRoleId === ROLE_LIST.LEADER.id) return false;
+        return true;
+      },
+      "member:remove": (object) => {
         const { targetRoleId } = object;
         if (!targetRoleId) return false;
 

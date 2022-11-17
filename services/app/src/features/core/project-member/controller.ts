@@ -1,11 +1,13 @@
 import Exception from "@/util/exception/Exception";
+import Member from "./domain/model/Member";
 import {
+  projectMemberService,
   projectsMembersQueryService,
   projectsMembersRepository,
   rolesRepository,
 } from "@/container";
 import { GeneratedId } from "@/features/shared/Id";
-import { checkPermission } from "@common/role";
+import { checkPermission, getRole } from "@common/role";
 import { Request, Response, NextFunction } from "express";
 
 type ProjectMemberController = {
@@ -28,7 +30,51 @@ type ProjectMemberController = {
 };
 
 const projectMemberController = (): ProjectMemberController => {
-  const add = (req: Request, res: Response, next: NextFunction) => {};
+  const add = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+
+      const { roleId: reqTargetRoleId, userId: reqTargetUserId } = req.body;
+
+      // バリデーション
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
+
+      const role = getRole(Number(reqTargetRoleId) || -1);
+      if (!role) throw new Exception("追加するメンバーの権限が不正です", 400);
+
+      // 権限確認
+      const myRoleId = await rolesRepository.fetchRoleId(projectId, userId);
+      if (
+        !checkPermission(myRoleId, "member:add", {
+          targetRoleId: role.id,
+        })
+      )
+        throw new Exception("メンバーを追加する権限がありません", 403);
+
+      // 追加可能か確認
+      // TODO: ユーザーが存在するか
+      if (await projectMemberService.isExist(projectId, targetUserId))
+        throw new Exception("すでにプロジェクトに参加しています", 400);
+      if (await projectMemberService.isMaxMember(projectId))
+        throw new Exception("メンバー数が上限に達しています", 400);
+
+      // プロジェクトメンバーの追加
+      const member = new Member(projectId, targetUserId, role);
+      await projectsMembersRepository.add(member);
+
+      res.status(200).send({
+        userId: member.userId.value,
+        role: {
+          id: member.role.id,
+          name: member.role.name,
+        },
+      });
+    })().catch(next);
+  };
 
   const fetchList = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
@@ -53,7 +99,9 @@ const projectMemberController = (): ProjectMemberController => {
     })().catch(next);
   };
 
-  const update = (req: Request, res: Response, next: NextFunction) => {};
+  const update = (req: Request, res: Response, next: NextFunction) => {
+    (async () => {})().catch(next);
+  };
 
   const remove = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
@@ -62,7 +110,6 @@ const projectMemberController = (): ProjectMemberController => {
       const reqTargetUserId = req.params.userId;
 
       // バリデーション
-
       if (!userId) throw new Exception("認証に失敗しました", 401);
 
       const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);

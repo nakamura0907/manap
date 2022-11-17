@@ -39,6 +39,28 @@ class PrismaProjectsMembersQueryService
     });
     return new MemberListDTO(members);
   }
+
+  async find(projectId: GeneratedId, userId: GeneratedId) {
+    const result = await prisma.projects_members.findFirst({
+      where: {
+        project_id: projectId.value,
+        user_id: userId.value,
+        delete_flag: false,
+      },
+    });
+    if (!result) return false;
+    return true;
+  }
+
+  async count(projectId: GeneratedId) {
+    const result = await prisma.projects_members.count({
+      where: {
+        project_id: projectId.value,
+        delete_flag: false,
+      },
+    });
+    return result;
+  }
 }
 
 export default PrismaProjectsMembersQueryService;
