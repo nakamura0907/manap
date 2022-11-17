@@ -64,10 +64,10 @@ export const rules: Rules = {
     static: ["project:update", "project:remove", "member:read"],
     dynamic: {
       "member:remove": (object: { [key: string]: any }) => {
-        const { roleId } = object;
-        if (!roleId) return false;
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
 
-        return roleId !== ROLE_LIST.ADMINISTRATOR.id;
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
       },
     },
   },
@@ -75,10 +75,10 @@ export const rules: Rules = {
     static: ["project:update", "member:read"],
     dynamic: {
       "member:remove": (object: { [key: string]: any }) => {
-        const { roleId } = object;
-        if (!roleId) return false;
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
 
-        return roleId !== ROLE_LIST.ADMINISTRATOR.id;
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
       },
     },
   },

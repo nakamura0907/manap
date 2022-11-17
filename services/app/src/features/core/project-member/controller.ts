@@ -65,14 +65,19 @@ const projectMemberController = (): ProjectMemberController => {
 
       // 権限確認
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
-      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
+      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
 
-      if (!checkPermission(roleId, "member:remove", { roleId }))
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId);
+      const targetRoleId = await rolesRepository.fetchRoleId(
+        projectId,
+        targetUserId.value
+      );
+
+      if (!checkPermission(roleId, "member:remove", { targetRoleId }))
         throw new Exception("メンバーを削除する権限がありません", 403);
 
       // プロジェクトメンバー削除
       const myUserId = new GeneratedId(userId);
-      const targetUserId = GeneratedId.validate(Number(reqTargetUserId) || -1);
       if (myUserId.equals(targetUserId))
         throw new Exception("自身を削除することはできません", 400);
 

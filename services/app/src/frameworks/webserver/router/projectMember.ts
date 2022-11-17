@@ -15,7 +15,7 @@ export const projectMemberRouter = (express: typeof Express) => {
     );
 
   router
-    .route("/members/:memberId")
+    .route("/members/:userId")
     .delete(
       passport.authenticate("jwt", { session: false }),
       controller.remove
