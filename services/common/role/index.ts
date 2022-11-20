@@ -44,6 +44,7 @@ const permission = [
   "project:remove",
   "member:add",
   "member:read",
+  "member:update",
   "member:remove",
 ] as const;
 export type Permission = typeof permission;
@@ -65,7 +66,16 @@ export const rules: Rules = {
     static: ["project:update", "project:remove", "member:read"],
     dynamic: {
       "member:add": (object) => {
-        return object.targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+      "member:update": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
       },
       "member:remove": (object) => {
         const { targetRoleId } = object;
@@ -79,6 +89,11 @@ export const rules: Rules = {
     static: ["project:update", "member:read"],
     dynamic: {
       "member:add": (object) => {
+        if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
+        if (object.targetRoleId === ROLE_LIST.LEADER.id) return false;
+        return true;
+      },
+      "member:update": (object) => {
         if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
         if (object.targetRoleId === ROLE_LIST.LEADER.id) return false;
         return true;

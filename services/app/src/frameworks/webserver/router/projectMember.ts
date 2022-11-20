@@ -17,6 +17,7 @@ export const projectMemberRouter = (express: typeof Express) => {
 
   router
     .route("/members/:userId")
+    .put(passport.authenticate("jwt", { session: false }), controller.update)
     .delete(
       passport.authenticate("jwt", { session: false }),
       controller.remove
