@@ -85,17 +85,16 @@ const projectController = (): ProjectController => {
 
       // プロジェクト取得
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
-      const result = await projectsQueryService.fetchById(projectId.value);
-
-      const member = result.members.find((member) => member.userId === userId);
-      if (!member) throw new Exception("プロジェクトに参加していません", 403);
+      const result = await projectsQueryService.fetchById(
+        projectId.value,
+        userId
+      );
 
       res.status(200).send({
         id: result.id,
         name: result.name,
         description: result.description,
-        roleId: member.role.id,
-        members: result.members,
+        roleId: result.roleId,
       });
     })().catch(next);
   };

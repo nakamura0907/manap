@@ -1,11 +1,3 @@
-type Member = {
-  userId: number;
-  name: string;
-  role: {
-    id: number;
-    name: string;
-  };
-};
 /**
  * プロジェクト詳細参照用オブジェクト
  */
@@ -13,36 +5,31 @@ export class ProjectDTO {
   private readonly _id: number;
   private readonly _name: string;
   private readonly _description: string;
-  private readonly _members: Member[];
+  private readonly _roleId: number;
 
-  constructor(
-    id: number,
-    name: string,
-    description: string,
-    members: Member[]
-  ) {
+  constructor(id: number, name: string, description: string, roleId: number) {
     this._id = id;
     this._name = name;
     this._description = description;
-    this._members = members;
+    this._roleId = roleId;
 
     Object.freeze(this);
   }
 
-  get id(): number {
+  get id() {
     return this._id;
   }
 
-  get name(): string {
+  get name() {
     return this._name;
   }
 
-  get description(): string {
+  get description() {
     return this._description;
   }
 
-  get members(): Member[] {
-    return this._members;
+  get roleId() {
+    return this._roleId;
   }
 }
 
@@ -62,15 +49,15 @@ export class ProjectListItemDTO {
     Object.freeze(this);
   }
 
-  get id(): number {
+  get id() {
     return this._id;
   }
 
-  get name(): string {
+  get name() {
     return this._name;
   }
 
-  get description(): string {
+  get description() {
     return this._description;
   }
 }

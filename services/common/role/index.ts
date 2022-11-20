@@ -23,7 +23,7 @@ export const ROLE_LIST: RoleList = {
     name: "管理者",
   },
   LEADER: {
-    id: 4,
+    id: 2,
     name: "リーダー",
   },
   DEVELOPER: {
@@ -31,7 +31,7 @@ export const ROLE_LIST: RoleList = {
     name: "開発者",
   },
   CLIENT: {
-    id: 2,
+    id: 4,
     name: "クライアント",
   },
 };

@@ -28,7 +28,7 @@ class PrismaProjectsQueryService implements IProjectsQueryService {
     });
   }
 
-  async fetchById(projectId: number) {
+  async fetchById(projectId: number, userId: number) {
     const result = await prisma.projects.findFirst({
       where: {
         id: projectId,
@@ -37,28 +37,24 @@ class PrismaProjectsQueryService implements IProjectsQueryService {
       include: {
         projects_members: {
           where: {
+            user_id: userId,
             delete_flag: false,
           },
-          include: {
-            users: true,
-            roles: true,
-          },
+          take: 1,
         },
       },
     });
     if (!result) throw new Exception("プロジェクトが存在しません", 404);
 
-    const members = result.projects_members.map((member) => {
-      return {
-        userId: member.user_id,
-        name: member.users.nickname,
-        role: {
-          id: member.roles.id,
-          name: member.roles.name,
-        },
-      };
-    });
-    return new ProjectDTO(result.id, result.name, result.description, members);
+    const member = result.projects_members[0];
+    if (!member) throw new Exception("プロジェクトに参加していません", 400);
+
+    return new ProjectDTO(
+      result.id,
+      result.name,
+      result.description,
+      member.role_id
+    );
   }
 }
 

@@ -10,8 +10,8 @@ import IProjectsQueryService from "./features/core/project/domain/repository/IPr
 import IProjectsRepository from "./features/core/project/domain/repository/IProjectsRepository";
 import PrismaProjectsQueryService from "./features/core/project/repository/PrismaProjectsQueryService";
 import PrismaProjectsRepository from "./features/core/project/repository/PrismaProjectsRepository";
-import IRolesRepository from "./features/core/roles/domain/repository/IRolesRepository";
-import PrismaRolesRepository from "./features/core/roles/repository/PrismaRolesRepository";
+import IRolesRepository from "./features/core/role/domain/repository/IRolesRepository";
+import PrismaRolesRepository from "./features/core/role/repository/PrismaRolesRepository";
 
 container.register("authRepository", {
   useClass: PrismaAuthRepository,

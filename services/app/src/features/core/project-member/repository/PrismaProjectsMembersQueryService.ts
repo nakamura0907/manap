@@ -22,6 +22,9 @@ class PrismaProjectsMembersQueryService
             users: true,
             roles: true,
           },
+          orderBy: {
+            role_id: "asc",
+          },
         },
       },
     });
