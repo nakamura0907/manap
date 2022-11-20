@@ -23,7 +23,7 @@ export const ROLE_LIST: RoleList = {
     name: "管理者",
   },
   LEADER: {
-    id: 4,
+    id: 2,
     name: "リーダー",
   },
   DEVELOPER: {
@@ -31,7 +31,7 @@ export const ROLE_LIST: RoleList = {
     name: "開発者",
   },
   CLIENT: {
-    id: 2,
+    id: 4,
     name: "クライアント",
   },
 };
@@ -39,7 +39,14 @@ export const ROLE_LIST: RoleList = {
 /**
  * パーミッション
  */
-const permission = ["projects:update", "projects:remove"] as const;
+const permission = [
+  "project:update",
+  "project:remove",
+  "member:add",
+  "member:read",
+  "member:update",
+  "member:remove",
+] as const;
 export type Permission = typeof permission;
 
 type Rules = {
@@ -56,19 +63,55 @@ type Rules = {
  */
 export const rules: Rules = {
   ADMINISTRATOR: {
-    static: ["projects:update", "projects:remove"],
-    dynamic: {},
+    static: ["project:update", "project:remove", "member:read"],
+    dynamic: {
+      "member:add": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+      "member:update": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+      "member:remove": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+    },
   },
   LEADER: {
-    static: ["projects:update"],
-    dynamic: {},
+    static: ["project:update", "member:read"],
+    dynamic: {
+      "member:add": (object) => {
+        if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
+        if (object.targetRoleId === ROLE_LIST.LEADER.id) return false;
+        return true;
+      },
+      "member:update": (object) => {
+        if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
+        if (object.targetRoleId === ROLE_LIST.LEADER.id) return false;
+        return true;
+      },
+      "member:remove": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+    },
   },
   DEVELOPER: {
-    static: [],
+    static: ["member:read"],
     dynamic: {},
   },
   CLIENT: {
-    static: [],
+    static: ["member:read"],
     dynamic: {},
   },
 };

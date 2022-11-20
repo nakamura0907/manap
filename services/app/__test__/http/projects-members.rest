@@ -1,0 +1,30 @@
+@projectId = 2
+@userId = 2
+
+### プロジェクトメンバー追加
+POST http://localhost:3001/api/v1/projects/{{projectId}}/members
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "userId": 2,
+  "roleId": 2
+}
+
+### プロジェクトメンバー一覧取得
+GET http://localhost:3001/api/v1/projects/{{projectId}}/members
+Authorization: Bearer {{token}}
+
+### プロジェクトメンバー更新
+PUT http://localhost:3001/api/v1/projects/{{projectId}}/members/2
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "roleId": 3
+}
+
+### プロジェクトメンバー削除
+DELETE http://localhost:3001/api/v1/projects/{{projectId}}/members/{{userId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
