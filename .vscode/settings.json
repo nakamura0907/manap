@@ -1,23 +1,48 @@
 {
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
+  // 基本設定
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.fontLigatures": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
   "editor.renderWhitespace": "boundary",
   "editor.rulers": [140],
-  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact",
+    "markdown": "javascriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  // "explorer.confirmDelete": false,
+  "explorer.confirmDragAndDrop": false,
+  "files.autoSave": "onFocusChange",
   "files.encoding": "utf8",
-  "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
   "search.exclude": {
-    "public/**": true,
-    "node_modules/**": true
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "public/**": true
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.fixAll": true
-  },
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // ワークベンチ
+  // "workbench.activityBar.visible": false,
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.editor.enablePreview": false,
+  "workbench.iconTheme": "material-icon-theme",
+  // 言語別設定
+  "js/ts.implicitProjectConfig.checkJs": true,
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  // 拡張機能
   "csscomb.formatOnSave": true,
   "csscomb.preset": "./.vscode/mycsscomb.json",
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.validate": true,
   "rest-client.environmentVariables": {
     "$shared": {
       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjY4NDg3NDc4fQ.1H_Z8eeYqAC-VM3WwHqmBj-101waAztw8bNVT1v4ctY"
