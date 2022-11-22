@@ -1,0 +1,12 @@
+@projectId = 2
+
+### 機能提案の追加
+POST http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "タスクボード機能",
+  "description": "",
+  "deadline": "2023-12-31"
+}

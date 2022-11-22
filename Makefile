@@ -4,6 +4,9 @@ app-up:
 app-build:
 	cd services/app && npm run build
 
+app-npm:
+	cd services/app && npm $(script)
+
 up:
 	docker-compose up --build --remove-orphans & \
 	make app-up

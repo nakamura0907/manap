@@ -20,7 +20,6 @@
   "files.autoSave": "onFocusChange",
   "files.encoding": "utf8",
   "files.insertFinalNewline": true,
-  "files.trimTrailingWhitespace": true,
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,

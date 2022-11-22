@@ -57,7 +57,6 @@ const projectMemberController = (): ProjectMemberController => {
         throw new Exception("メンバーを追加する権限がありません", 403);
 
       // 追加可能か確認
-      // TODO: ユーザーが存在するか
       if (await projectMemberService.isExist(projectId, targetUserId))
         throw new Exception("すでにプロジェクトに参加しています", 400);
       if (await projectMemberService.isMaxMember(projectId))
