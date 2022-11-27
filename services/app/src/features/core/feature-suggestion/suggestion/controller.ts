@@ -1,3 +1,4 @@
+import { suggestionsRepository } from "@/container";
 import Suggestion from "@/features/core/feature-suggestion/suggestion/domain/model/Suggestion";
 import { GeneratedId } from "@/features/shared/Id";
 import Exception from "@/util/exception/Exception";
@@ -22,49 +23,105 @@ const suggestionController = (): SuggestionController => {
       const userId = req.user?.id;
       const reqProjectId = req.params.projectId;
 
-      const { title, description, deadline } = req.body;
+      const { title, description } = req.body;
 
       // バリデーション
       if (!userId) throw new Exception("認証に失敗しました", 401);
 
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
-      // 提案の追加
+      // 権限確認
+
+      // 提案追加
       const suggestion = Suggestion.create(
         new GeneratedId(userId),
         projectId,
         title,
-        description,
-        deadline
+        description
       );
-      console.log(suggestion);
+      const result = await suggestionsRepository.add(suggestion);
 
       // レスポンス
-      res.status(200).send({});
+      res.status(200).send({
+        id: result.id.value,
+        projectId: result.projectId.value,
+        proposerId: result.proposerId.value,
+        title: result.title.value,
+        description: result.description.value,
+        status: result.status,
+        vendorApproval: result.vendorApproval,
+        clientApproval: result.clientApproval,
+      });
     })().catch(next);
   };
 
   const fetchList = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+
+      // バリデーション
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+
+      // 権限確認
+
+      // 提案一覧取得
+      console.log(projectId);
+
       res.status(200).send({});
     })().catch(next);
   };
 
   const fetchById = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+      const reqSuggestionId = req.params.suggestionId;
+
+      // バリデーション
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
+
+      // 権限確認
+
+      // 提案取得
+      console.log("projectId", projectId);
+      console.log("suggestionId", suggestionId);
+
       res.status(200).send({});
     })().catch(next);
   };
 
   const update = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+      const reqSuggestionId = req.params.suggestionId;
+
+      const { title, description, status, vendorApproval, clientApproval } =
+        req.body;
+
+      // バリデーション
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
+
       // 権限確認
 
-      // 提案の取得
+      // 提案取得
 
-      // 提案のバリデーション
+      // 提案バリデーション
 
-      // 提案の更新
+      // 提案更新
+      console.log("projectId", projectId);
+      console.log("suggestionId", suggestionId);
+
+      console.log(title, description, status, vendorApproval, clientApproval);
 
       res.status(200).send({});
     })().catch(next);
@@ -72,6 +129,22 @@ const suggestionController = (): SuggestionController => {
 
   const remove = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
+      const userId = req.user?.id;
+      const reqProjectId = req.params.projectId;
+      const reqSuggestionId = req.params.suggestionId;
+
+      // バリデーション
+      if (!userId) throw new Exception("認証に失敗しました", 401);
+
+      const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
+      const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
+
+      // 権限確認
+
+      // 提案削除
+      console.log("projectId", projectId);
+      console.log("suggestionId", suggestionId);
+
       res.status(200).end();
     })().catch(next);
   };
