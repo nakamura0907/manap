@@ -129,7 +129,7 @@ const projectMemberController = (): ProjectMemberController => {
 
       // 更新可能か確認
       if (!(await projectMemberService.isExist(projectId, targetUserId)))
-        throw new Exception("プロジェクトに参加していません", 400);
+        throw new Exception("プロジェクトに参加していません", 403);
 
       const currentRoleId = roleList.getRole(targetUserId.value);
       const currentRole = getRole(currentRoleId);

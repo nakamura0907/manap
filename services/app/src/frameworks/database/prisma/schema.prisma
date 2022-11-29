@@ -55,6 +55,7 @@ model projects_members {
 model roles {
   id               Int                @id @default(autoincrement())
   name             String             @db.VarChar(50)
+  weight           Int
   projects_members projects_members[]
 }
 

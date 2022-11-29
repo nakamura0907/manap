@@ -2,7 +2,13 @@
  * 権限一覧のキー名
  * ルールなどにも利用
  */
-const ROLE_NAME = ["ADMINISTRATOR", "CLIENT", "DEVELOPER", "LEADER"] as const;
+const ROLE_NAME = [
+  "ADMINISTRATOR",
+  "CLIENT",
+  "DEVELOPER",
+  "LEADER",
+  "CLIENT_LEADER",
+] as const;
 type RoleName = typeof ROLE_NAME[number];
 
 export type Role = {
@@ -33,6 +39,10 @@ export const ROLE_LIST: RoleList = {
   CLIENT: {
     id: 4,
     name: "クライアント",
+  },
+  CLIENT_LEADER: {
+    id: 5,
+    name: "クライアントリーダー",
   },
 };
 
@@ -103,6 +113,17 @@ export const rules: Rules = {
         if (!targetRoleId) return false;
 
         return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
+      },
+    },
+  },
+  CLIENT_LEADER: {
+    static: ["member:read"],
+    dynamic: {
+      "member:add": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId === ROLE_LIST.CLIENT.id;
       },
     },
   },

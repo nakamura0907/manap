@@ -1,4 +1,8 @@
-import { suggestionsRepository } from "@/container";
+import {
+  projectMemberService,
+  rolesRepository,
+  suggestionsRepository,
+} from "@/container";
 import Suggestion from "@/features/core/feature-suggestion/suggestion/domain/model/Suggestion";
 import { GeneratedId } from "@/features/shared/Id";
 import Exception from "@/util/exception/Exception";
@@ -20,21 +24,24 @@ type SuggestionController = {
 const suggestionController = (): SuggestionController => {
   const add = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
-      const userId = req.user?.id;
+      const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
 
       const { title, description } = req.body;
 
       // バリデーション
-      if (!userId) throw new Exception("認証に失敗しました", 401);
+      if (!reqUserId) throw new Exception("認証に失敗しました", 401);
 
+      const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
-      // 権限確認
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案追加
       const suggestion = Suggestion.create(
-        new GeneratedId(userId),
+        userId,
         projectId,
         title,
         description
@@ -57,15 +64,18 @@ const suggestionController = (): SuggestionController => {
 
   const fetchList = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
-      const userId = req.user?.id;
+      const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
 
       // バリデーション
-      if (!userId) throw new Exception("認証に失敗しました", 401);
+      if (!reqUserId) throw new Exception("認証に失敗しました", 401);
 
+      const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
-      // 権限確認
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案一覧取得
       console.log(projectId);
@@ -76,17 +86,20 @@ const suggestionController = (): SuggestionController => {
 
   const fetchById = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
-      const userId = req.user?.id;
+      const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
       const reqSuggestionId = req.params.suggestionId;
 
       // バリデーション
-      if (!userId) throw new Exception("認証に失敗しました", 401);
+      if (!reqUserId) throw new Exception("認証に失敗しました", 401);
 
+      const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
 
-      // 権限確認
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案取得
       console.log("projectId", projectId);
@@ -98,7 +111,7 @@ const suggestionController = (): SuggestionController => {
 
   const update = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
-      const userId = req.user?.id;
+      const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
       const reqSuggestionId = req.params.suggestionId;
 
@@ -106,12 +119,19 @@ const suggestionController = (): SuggestionController => {
         req.body;
 
       // バリデーション
-      if (!userId) throw new Exception("認証に失敗しました", 401);
+      if (!reqUserId) throw new Exception("認証に失敗しました", 401);
 
+      const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
 
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
+
       // 権限確認
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
+      console.log("roleId", roleId);
 
       // 提案取得
 
@@ -129,17 +149,20 @@ const suggestionController = (): SuggestionController => {
 
   const remove = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
-      const userId = req.user?.id;
+      const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
       const reqSuggestionId = req.params.suggestionId;
 
       // バリデーション
-      if (!userId) throw new Exception("認証に失敗しました", 401);
+      if (!reqUserId) throw new Exception("認証に失敗しました", 401);
 
+      const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
 
       // 権限確認
+      const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
+      console.log("roleId", roleId);
 
       // 提案削除
       console.log("projectId", projectId);
