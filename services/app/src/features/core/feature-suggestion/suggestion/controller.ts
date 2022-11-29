@@ -137,11 +137,6 @@ const suggestionController = (): SuggestionController => {
 
       // 権限確認
       const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
-      console.log("roleId", roleId);
-      console.log("object", {
-        vendorApproval,
-        clientApproval,
-      });
       if (
         !checkPermission(roleId, "feature-suggestion:update", {
           vendorApproval,
