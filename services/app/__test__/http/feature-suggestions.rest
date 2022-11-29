@@ -7,9 +7,13 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "title": "タスクボード機能",
+  "title": "掲示板機能",
   "description": ""
 }
+
+### 機能提案の一覧
+GET http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions
+Authorization: Bearer {{token}}
 
 ### 機能提案の削除
 DELETE http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions/{{suggestionId}}

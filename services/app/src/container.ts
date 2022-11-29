@@ -1,4 +1,6 @@
+import ISuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsQueryService";
 import ISuggestionsRepository from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsRepository";
+import PrismaSuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/repository/PrismaSuggestionsQueryService";
 import PrismaSuggestionsRepository from "@/features/core/feature-suggestion/suggestion/repository/PrismaSuggestionsRepository";
 import { container } from "tsyringe";
 import IAuthRepository from "./features/core/auth/domain/repository/IAuthRepository";
@@ -24,9 +26,15 @@ export const authRepository =
   container.resolve<IAuthRepository>("authRepository");
 
 // FeatureSuggestion
+container.register("suggestionsQueryService", {
+  useClass: PrismaSuggestionsQueryService,
+});
 container.register("suggestionsRepository", {
   useClass: PrismaSuggestionsRepository,
 });
+
+export const suggestionsQueryService =
+  container.resolve<ISuggestionsQueryService>("suggestionsQueryService");
 export const suggestionsRepository = container.resolve<ISuggestionsRepository>(
   "suggestionsRepository"
 );

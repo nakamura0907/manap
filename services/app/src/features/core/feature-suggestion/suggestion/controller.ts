@@ -1,6 +1,7 @@
 import {
   projectMemberService,
   rolesRepository,
+  suggestionsQueryService,
   suggestionsRepository,
 } from "@/container";
 import Suggestion from "@/features/core/feature-suggestion/suggestion/domain/model/Suggestion";
@@ -41,8 +42,8 @@ const suggestionController = (): SuggestionController => {
 
       // 提案追加
       const suggestion = Suggestion.create(
-        userId,
         projectId,
+        userId,
         title,
         description
       );
@@ -78,9 +79,11 @@ const suggestionController = (): SuggestionController => {
         throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案一覧取得
-      console.log(projectId);
+      const result = await suggestionsQueryService.fetchList(projectId);
 
-      res.status(200).send({});
+      res.status(200).send({
+        suggestions: result.suggestions,
+      });
     })().catch(next);
   };
 
