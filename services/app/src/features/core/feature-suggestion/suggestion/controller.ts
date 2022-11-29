@@ -5,8 +5,10 @@ import {
   suggestionsRepository,
 } from "@/container";
 import Suggestion from "@/features/core/feature-suggestion/suggestion/domain/model/Suggestion";
+import SuggestionSerializer from "@/features/core/feature-suggestion/suggestion/Serializer";
 import { GeneratedId } from "@/features/shared/Id";
 import Exception from "@/util/exception/Exception";
+import { checkPermission } from "@common/role";
 import { Request, Response, NextFunction } from "express";
 
 type SuggestionController = {
@@ -23,6 +25,8 @@ type SuggestionController = {
 };
 
 const suggestionController = (): SuggestionController => {
+  const serializer = new SuggestionSerializer();
+
   const add = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       const reqUserId = req.user?.id;
@@ -50,16 +54,7 @@ const suggestionController = (): SuggestionController => {
       const result = await suggestionsRepository.add(suggestion);
 
       // レスポンス
-      res.status(200).send({
-        id: result.id.value,
-        projectId: result.projectId.value,
-        proposerId: result.proposerId.value,
-        title: result.title.value,
-        description: result.description.value,
-        status: result.status,
-        vendorApproval: result.vendorApproval,
-        clientApproval: result.clientApproval,
-      });
+      res.status(200).send(serializer.add(result));
     })().catch(next);
   };
 
@@ -105,10 +100,12 @@ const suggestionController = (): SuggestionController => {
         throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案取得
-      console.log("projectId", projectId);
-      console.log("suggestionId", suggestionId);
+      const result = await suggestionsQueryService.fetchById(
+        suggestionId,
+        projectId
+      );
 
-      res.status(200).send({});
+      res.status(200).send(result.toObject);
     })().catch(next);
   };
 
@@ -132,21 +129,40 @@ const suggestionController = (): SuggestionController => {
       if (!(await projectMemberService.isExist(projectId, userId)))
         throw new Exception("プロジェクトに参加していません", 403);
 
+      // 提案取得
+      const currentSuggestion = await suggestionsRepository.find(
+        suggestionId,
+        projectId
+      );
+
       // 権限確認
       const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
       console.log("roleId", roleId);
-
-      // 提案取得
+      console.log("object", {
+        vendorApproval,
+        clientApproval,
+      });
+      if (
+        !checkPermission(roleId, "feature-suggestion:update", {
+          vendorApproval,
+          clientApproval,
+        })
+      )
+        throw new Exception("機能提案を更新する権限がありません", 403);
 
       // 提案バリデーション
+      const suggestion = currentSuggestion.copyWith({
+        title,
+        description,
+        status,
+        vendorApproval,
+        clientApproval,
+      });
 
       // 提案更新
-      console.log("projectId", projectId);
-      console.log("suggestionId", suggestionId);
+      await suggestionsRepository.update(suggestion);
 
-      console.log(title, description, status, vendorApproval, clientApproval);
-
-      res.status(200).send({});
+      res.status(200).send(serializer.update(suggestion));
     })().catch(next);
   };
 
@@ -168,7 +184,7 @@ const suggestionController = (): SuggestionController => {
         throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案削除
-      await suggestionsRepository.remove(suggestionId);
+      await suggestionsRepository.remove(suggestionId, projectId);
 
       res.status(200).end();
     })().catch(next);

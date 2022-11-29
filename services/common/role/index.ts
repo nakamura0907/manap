@@ -56,6 +56,7 @@ const permission = [
   "member:read",
   "member:update",
   "member:remove",
+  "feature-suggestion:update",
 ] as const;
 export type Permission = typeof permission;
 
@@ -73,7 +74,12 @@ type Rules = {
  */
 export const rules: Rules = {
   ADMINISTRATOR: {
-    static: ["project:update", "project:remove", "member:read"],
+    static: [
+      "project:update",
+      "project:remove",
+      "member:read",
+      "feature-suggestion:update",
+    ],
     dynamic: {
       "member:add": (object) => {
         const { targetRoleId } = object;
@@ -114,6 +120,12 @@ export const rules: Rules = {
 
         return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
       },
+      "feature-suggestion:update": (object) => {
+        // clientApprovalは変更できない
+        const { clientApproval } = object;
+
+        return clientApproval !== undefined;
+      },
     },
   },
   CLIENT_LEADER: {
@@ -125,15 +137,33 @@ export const rules: Rules = {
 
         return targetRoleId === ROLE_LIST.CLIENT.id;
       },
+      "feature-suggestion:update": (object) => {
+        // vendorApprovalは変更できない
+        const { vendorApproval } = object;
+
+        return vendorApproval !== undefined;
+      },
     },
   },
   DEVELOPER: {
     static: ["member:read"],
-    dynamic: {},
+    dynamic: {
+      "feature-suggestion:update": (object) => {
+        const { vendorApproval, clientApproval } = object;
+
+        return vendorApproval === undefined && clientApproval === undefined;
+      },
+    },
   },
   CLIENT: {
     static: ["member:read"],
-    dynamic: {},
+    dynamic: {
+      "feature-suggestion:update": (object) => {
+        const { vendorApproval, clientApproval } = object;
+
+        return vendorApproval === undefined && clientApproval === undefined;
+      },
+    },
   },
 };
 

@@ -110,18 +110,23 @@ class Suggestion<T extends Id = Id> {
     const title = modifyObj.title
       ? SuggestionTitle.validate(modifyObj.title)
       : this._title;
-    const description = modifyObj.description
-      ? SuggestionDescription.validate(modifyObj.description)
-      : this._description;
+    const description =
+      modifyObj.description !== undefined
+        ? SuggestionDescription.validate(modifyObj.description)
+        : this._description;
     return new Suggestion(
       this.id,
       this.projectId,
       this.proposerId,
       title,
       description,
-      modifyObj.status || this.status,
-      modifyObj.vendorApproval || this.vendorApproval,
-      modifyObj.clientApproval || this.clientApproval
+      modifyObj.status !== undefined ? modifyObj.status : this.status,
+      modifyObj.vendorApproval !== undefined
+        ? modifyObj.vendorApproval
+        : this.vendorApproval,
+      modifyObj.clientApproval !== undefined
+        ? modifyObj.clientApproval
+        : this.clientApproval
     );
   }
 }

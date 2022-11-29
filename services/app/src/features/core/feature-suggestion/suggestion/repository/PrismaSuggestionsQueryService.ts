@@ -1,7 +1,13 @@
 import ISuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsQueryService";
-import { SuggestionListDTO } from "@/features/core/feature-suggestion/suggestion/query";
+import {
+  SuggestionListDTO,
+  SuggestionDetailDTO,
+} from "@/features/core/feature-suggestion/suggestion/query";
 import { GeneratedId } from "@/features/shared/Id";
-import { prisma } from "@/frameworks/database/prisma";
+import {
+  prisma,
+  PrismaClientKnownRequestError,
+} from "@/frameworks/database/prisma";
 import Exception from "@/util/exception/Exception";
 
 class PrismaSuggestionsQueryService implements ISuggestionsQueryService {
@@ -29,8 +35,36 @@ class PrismaSuggestionsQueryService implements ISuggestionsQueryService {
       return new SuggestionListDTO(collection);
     } catch (e) {
       const exception = new Exception("提案一覧の取得に失敗しました");
-      if (e instanceof Error) exception.setOriginalError(e);
       throw exception;
+    }
+  }
+
+  async fetchById(suggestionId: GeneratedId, projectId: GeneratedId) {
+    try {
+      const result = await prisma.feature_suggestions.findFirst({
+        where: {
+          id: suggestionId.value,
+          project_id: projectId.value,
+        },
+      });
+      if (!result) {
+        throw new Exception("提案が見つかりません", 404);
+      }
+
+      return new SuggestionDetailDTO(
+        result.id,
+        result.proposer_id,
+        result.title,
+        result.description,
+        result.status,
+        result.vendor_approval,
+        result.client_approval
+      );
+    } catch (e) {
+      if (e instanceof PrismaClientKnownRequestError) {
+        throw new Exception("提案の取得に失敗しました");
+      }
+      throw e;
     }
   }
 }
