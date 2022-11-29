@@ -160,13 +160,12 @@ const suggestionController = (): SuggestionController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const suggestionId = GeneratedId.validate(Number(reqSuggestionId) || -1);
 
-      // 権限確認
-      const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
-      console.log("roleId", roleId);
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // 提案削除
-      console.log("projectId", projectId);
-      console.log("suggestionId", suggestionId);
+      await suggestionsRepository.remove(suggestionId);
 
       res.status(200).end();
     })().catch(next);

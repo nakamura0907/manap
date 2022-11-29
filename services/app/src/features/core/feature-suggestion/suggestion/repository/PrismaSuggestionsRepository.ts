@@ -23,6 +23,20 @@ class PrismaSuggestionsRepository implements ISuggestionsRepository {
       throw exception;
     }
   }
+
+  async remove(suggestionId: GeneratedId) {
+    try {
+      await prisma.feature_suggestions.delete({
+        where: {
+          id: suggestionId.value,
+        },
+      });
+    } catch (e) {
+      const exception = new Exception("機能提案の削除に失敗しました");
+      if (e instanceof Error) exception.setOriginalError(e);
+      throw exception;
+    }
+  }
 }
 
 export default PrismaSuggestionsRepository;
