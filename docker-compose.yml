@@ -2,15 +2,16 @@ version: "3"
 
 services:
   # app
-  app:
-    image: node:current-alpine
-    working_dir: /usr/src/app
-    volumes:
-      - ./services/app:/usr/src/app
-      - ./services/common:/usr/src/common
-    command: [sh, -c, npm run start]
-    ports:
-      - 3001:3001
+  # app:
+  #   image: node:current-alpine
+  #   working_dir: /usr/src/app
+  #   volumes:
+  #     - ./services/app:/usr/src/app
+  #     - ./services/common:/usr/src/common
+  #   command: [sh, -c, npm run start]
+  #   ports:
+  #     - 3001:3001
+  #     - 9229:9229
 
   # mysql
   mysql:

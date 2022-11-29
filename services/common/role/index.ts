@@ -2,7 +2,13 @@
  * 権限一覧のキー名
  * ルールなどにも利用
  */
-const ROLE_NAME = ["ADMINISTRATOR", "CLIENT", "DEVELOPER", "LEADER"] as const;
+const ROLE_NAME = [
+  "ADMINISTRATOR",
+  "CLIENT",
+  "DEVELOPER",
+  "LEADER",
+  "CLIENT_LEADER",
+] as const;
 type RoleName = typeof ROLE_NAME[number];
 
 export type Role = {
@@ -34,6 +40,10 @@ export const ROLE_LIST: RoleList = {
     id: 4,
     name: "クライアント",
   },
+  CLIENT_LEADER: {
+    id: 5,
+    name: "クライアントリーダー",
+  },
 };
 
 /**
@@ -46,6 +56,7 @@ const permission = [
   "member:read",
   "member:update",
   "member:remove",
+  "feature-suggestion:update",
 ] as const;
 export type Permission = typeof permission;
 
@@ -63,7 +74,12 @@ type Rules = {
  */
 export const rules: Rules = {
   ADMINISTRATOR: {
-    static: ["project:update", "project:remove", "member:read"],
+    static: [
+      "project:update",
+      "project:remove",
+      "member:read",
+      "feature-suggestion:update",
+    ],
     dynamic: {
       "member:add": (object) => {
         const { targetRoleId } = object;
@@ -104,15 +120,50 @@ export const rules: Rules = {
 
         return targetRoleId !== ROLE_LIST.ADMINISTRATOR.id;
       },
+      "feature-suggestion:update": (object) => {
+        // clientApprovalは変更できない
+        const { clientApproval } = object;
+
+        return clientApproval !== undefined;
+      },
+    },
+  },
+  CLIENT_LEADER: {
+    static: ["member:read"],
+    dynamic: {
+      "member:add": (object) => {
+        const { targetRoleId } = object;
+        if (!targetRoleId) return false;
+
+        return targetRoleId === ROLE_LIST.CLIENT.id;
+      },
+      "feature-suggestion:update": (object) => {
+        // vendorApprovalは変更できない
+        const { vendorApproval } = object;
+
+        return vendorApproval !== undefined;
+      },
     },
   },
   DEVELOPER: {
     static: ["member:read"],
-    dynamic: {},
+    dynamic: {
+      "feature-suggestion:update": (object) => {
+        const { vendorApproval, clientApproval } = object;
+
+        return vendorApproval === undefined && clientApproval === undefined;
+      },
+    },
   },
   CLIENT: {
     static: ["member:read"],
-    dynamic: {},
+    dynamic: {
+      "feature-suggestion:update": (object) => {
+        const { vendorApproval, clientApproval } = object;
+
+        return vendorApproval === undefined && clientApproval === undefined;
+      },
+    },
   },
 };
 

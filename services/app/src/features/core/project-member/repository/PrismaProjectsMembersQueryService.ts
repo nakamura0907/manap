@@ -23,7 +23,9 @@ class PrismaProjectsMembersQueryService
             roles: true,
           },
           orderBy: {
-            role_id: "asc",
+            roles: {
+              weight: "asc",
+            },
           },
         },
       },
