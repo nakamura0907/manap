@@ -10,11 +10,12 @@ datasource db {
 }
 
 model users {
-  id                  Int                   @id @default(autoincrement())
-  nickname            String                @db.VarChar(255)
-  feature_suggestions feature_suggestions[]
-  projects_members    projects_members[]
-  users_auths         users_auths[]
+  id                           Int                            @id @default(autoincrement())
+  nickname                     String                         @db.VarChar(255)
+  feature_suggestions          feature_suggestions[]
+  feature_suggestions_comments feature_suggestions_comments[]
+  projects_members             projects_members[]
+  users_auths                  users_auths[]
 }
 
 model users_auths {
@@ -60,18 +61,33 @@ model roles {
 }
 
 model feature_suggestions {
-  id              Int      @id @default(autoincrement())
-  project_id      Int
-  proposer_id     Int
-  title           String   @db.Text
-  description     String   @db.Text
-  status          Boolean  @default(false)
-  vendor_approval Boolean  @default(false)
-  client_approval Boolean  @default(false)
-  projects        projects @relation(fields: [project_id], references: [id], onUpdate: Restrict, map: "ref_feature-suggestions_project_id")
-  users           users    @relation(fields: [proposer_id], references: [id], onUpdate: Restrict, map: "ref_feature-suggestions_proposer_id")
+  id                           Int                            @id @default(autoincrement())
+  project_id                   Int
+  proposer_id                  Int
+  title                        String                         @db.Text
+  description                  String                         @db.Text
+  status                       Boolean                        @default(false)
+  vendor_approval              Boolean                        @default(false)
+  client_approval              Boolean                        @default(false)
+  projects                     projects                       @relation(fields: [project_id], references: [id], onUpdate: Restrict, map: "ref_feature-suggestions_project_id")
+  users                        users                          @relation(fields: [proposer_id], references: [id], onUpdate: Restrict, map: "ref_feature-suggestions_proposer_id")
+  feature_suggestions_comments feature_suggestions_comments[]
 
   @@index([proposer_id], map: "ref_feature-suggestions_proposer_id")
   @@index([project_id], map: "ref_feature-suggestions_project_id")
   @@map("feature-suggestions")
+}
+
+model feature_suggestions_comments {
+  id                  Int                 @id @default(autoincrement())
+  suggestion_id       Int
+  user_id             Int
+  content             String              @db.Text
+  created_at          DateTime            @default(now()) @db.Timestamp(0)
+  feature_suggestions feature_suggestions @relation(fields: [suggestion_id], references: [id], map: "ref_feature-suggestions_comments_suggestions_id")
+  users               users               @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "ref_feature-suggestions_comments_user_id")
+
+  @@index([suggestion_id], map: "ref_feature-suggestions_comments_suggestion_id")
+  @@index([user_id], map: "ref_feature-suggestions_comments_user_id")
+  @@map("feature-suggestions_comments")
 }

@@ -78,8 +78,7 @@ class PrismaSuggestionsRepository implements ISuggestionsRepository {
         },
       });
     } catch (e) {
-      const exception = new Exception("機能提案の更新に失敗しました");
-      throw exception;
+      throw new Exception("機能提案の更新に失敗しました");
     }
   }
 

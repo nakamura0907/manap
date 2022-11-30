@@ -34,3 +34,16 @@ Authorization: Bearer {{token}}
 ### 機能提案の削除
 DELETE http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions/{{suggestionId}}
 Authorization: Bearer {{token}}
+
+### 機能提案コメントの追加
+POST http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions/{{suggestionId}}/comments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": "こんにちは"
+}
+
+### 機能提案コメントの一覧
+GET http://localhost:3001/api/v1/projects/{{projectId}}/feature-suggestions/{{suggestionId}}/comments
+Authorization: Bearer {{token}}

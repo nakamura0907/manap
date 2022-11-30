@@ -1,3 +1,5 @@
+import ISuggestionsCommentsRepository from "@/features/core/feature-suggestion/comment/domain/repository/ISuggestionsCommentsRepository";
+import PrismaSuggestionsCommentsRepository from "@/features/core/feature-suggestion/comment/repository/PrismaSuggestionsCommentsRepository";
 import ISuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsQueryService";
 import ISuggestionsRepository from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsRepository";
 import PrismaSuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/repository/PrismaSuggestionsQueryService";
@@ -33,11 +35,20 @@ container.register("suggestionsRepository", {
   useClass: PrismaSuggestionsRepository,
 });
 
+container.register("suggestionsCommentsRepository", {
+  useClass: PrismaSuggestionsCommentsRepository,
+});
+
 export const suggestionsQueryService =
   container.resolve<ISuggestionsQueryService>("suggestionsQueryService");
 export const suggestionsRepository = container.resolve<ISuggestionsRepository>(
   "suggestionsRepository"
 );
+
+export const suggestionsCommentsRepository =
+  container.resolve<ISuggestionsCommentsRepository>(
+    "suggestionsCommentsRepository"
+  );
 
 // Project
 container.register("projectsRepository", {
