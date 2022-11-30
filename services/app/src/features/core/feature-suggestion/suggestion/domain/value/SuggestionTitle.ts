@@ -6,7 +6,7 @@ class SuggestionTitle extends ValueObject<string> {
     super(value);
   }
 
-  static validate(value: string): SuggestionTitle {
+  static validate(value: string) {
     if (!value) throw new Exception("提案タイトルを入力してください", 400);
     if (value.length > 100) {
       throw new Exception("提案のタイトルは100文字以内で入力してください", 400);
