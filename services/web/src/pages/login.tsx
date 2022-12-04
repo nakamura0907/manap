@@ -1,4 +1,7 @@
-import Button from "@components/ui/button";
+import Button, {
+  FacebookLoginButton,
+  GithubLoginButton,
+} from "@components/ui/button";
 import Form from "@components/ui/form";
 import Input from "@components/ui/input";
 import Link from "@components/ui/link";
@@ -48,7 +51,9 @@ const Login: NextPage = () => {
 
       <div>
         <div>または</div>
-        <div>SNSログインボタン</div>
+        <div>
+          <GithubLoginButton text="Githubアカウントでログイン" />
+        </div>
       </div>
     </div>
   );
