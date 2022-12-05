@@ -14,6 +14,10 @@ type AuthController = {
    * JWTトークンを発行する
    */
   login: (req: Request, res: Response) => void;
+  /**
+   * Github認証コールバック
+   */
+  githubCallback: (req: Request, res: Response) => void;
 };
 
 const authController = (): AuthController => {
@@ -46,7 +50,17 @@ const authController = (): AuthController => {
     res.status(200).send({ id: req.user.id, token });
   };
 
-  return { signup, login };
+  const githubCallback = (req: Request, res: Response) => {
+    if (!req.user) throw new Exception("認証に失敗しました", 401);
+
+    // トークン発行
+    const token = signToken(req.user);
+
+    res.cookie("token", token);
+    res.redirect(`http://localhost:3000/login`);
+  };
+
+  return { signup, login, githubCallback };
 };
 
 export default authController;

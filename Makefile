@@ -9,6 +9,7 @@ app-npm:
 
 up:
 	docker-compose up --build --remove-orphans & \
+	cd services/web && npm run dev & \
 	make app-up
 
 daemon:
