@@ -64,6 +64,9 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
             <Link href={`/projects/${projectId}`}>ダッシュボード</Link>
           </li>
           <li>
+            <Link href={`/projects/${projectId}/tasks`}>タスクボード</Link>
+          </li>
+          <li>
             <Link href={`/projects/${projectId}/gantt_charts`}>
               ガントチャート
             </Link>
