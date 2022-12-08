@@ -25,7 +25,13 @@ export const authRouter = (express: typeof Express) => {
   router.get(
     "/auth/github/callback",
     passport.authenticate("github", { session: false }),
-    controller.login
+    controller.githubCallback
+  );
+
+  router.post(
+    "/auth/verify",
+    passport.authenticate("jwt", { session: false }),
+    controller.verify
   );
 
   return router;
