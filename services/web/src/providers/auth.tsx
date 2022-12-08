@@ -31,7 +31,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({
   React.useEffect(() => {
     (async () => {
       const cookies = parseCookies();
-      console.log(cookies);
 
       const token = cookies.token;
       if (token) {
@@ -40,6 +39,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({
           token,
           userId: response.data.id,
         });
+        console.log(`login: ${response.data.id}`);
       }
     })()
       .catch(() => {

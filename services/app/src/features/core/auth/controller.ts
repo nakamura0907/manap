@@ -18,6 +18,10 @@ type AuthController = {
    * Github認証コールバック
    */
   githubCallback: (req: Request, res: Response) => void;
+  /**
+   * トークン検証
+   */
+  verify: (req: Request, res: Response) => void;
 };
 
 const authController = (): AuthController => {
@@ -60,7 +64,15 @@ const authController = (): AuthController => {
     res.redirect(`http://localhost:3000/login`);
   };
 
-  return { signup, login, githubCallback };
+  const verify = (req: Request, res: Response) => {
+    if (!req.user) throw new Exception("認証に失敗しました", 401);
+
+    res.status(200).send({
+      id: req.user.id,
+    });
+  };
+
+  return { signup, login, githubCallback, verify };
 };
 
 export default authController;

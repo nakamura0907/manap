@@ -1,3 +1,5 @@
+import type { NextPage } from "next";
+import React from "react";
 import Button, { GithubLoginButton } from "@components/ui/button";
 import Divider from "@components/ui/divider";
 import Form from "@components/ui/form";
@@ -5,14 +7,18 @@ import Input from "@components/ui/input";
 import Link from "@components/ui/link";
 import { FormButtonSpace } from "@components/ui/space";
 import { loginByEmail, setToken } from "@features/auth";
-import type { NextPage } from "next";
+import { setAuthContext } from "@providers/auth";
+import { useRouter } from "next/router";
 
 type Values = {
   email: string;
   password: string;
 };
 
+const useSetAuth = () => React.useContext(setAuthContext);
 const Login: NextPage = () => {
+  const router = useRouter();
+  const setAuth = useSetAuth();
   const [form] = Form.useForm<Values>();
 
   const handleFinish = async (values: Values) => {
@@ -22,6 +28,12 @@ const Login: NextPage = () => {
         password: values.password,
       });
       setToken(result.data.token);
+      setAuth({
+        token: result.data.token,
+        userId: result.data.id,
+      });
+
+      router.push("/mypage");
     } catch (error) {
       console.log(error);
     }

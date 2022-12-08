@@ -1,14 +1,17 @@
 import type { AppProps } from "next/app";
-import { LayoutA, LayoutB } from "../components/template/layout";
+import {
+  DefaultLayout,
+  ProjectPageLayout,
+} from "../components/template/layout";
 import AppProvider from "../providers/app";
 
 import "../styles/globals.css";
 
 const Layout = ({ route, children }: { route: string; children: any }) => {
   if (route.startsWith("/projects/")) {
-    return <LayoutB>{children}</LayoutB>;
+    return <ProjectPageLayout>{children}</ProjectPageLayout>;
   }
-  return <LayoutA>{children}</LayoutA>;
+  return <DefaultLayout>{children}</DefaultLayout>;
 };
 
 function MyApp({ Component, pageProps, router }: AppProps) {
