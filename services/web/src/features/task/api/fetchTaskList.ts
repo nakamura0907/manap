@@ -1,8 +1,8 @@
 import { Task } from "@features/task/types";
 import fetch from "@lib/fetch";
 
-type FetchTaskListResponse = {
-  tasks: Pick<Task, "id" | "title" | "dueDate" | "priority" | "status">[];
+export type FetchTaskListResponse = {
+  tasks: Pick<Task, "id" | "title" | "status">[];
 };
 
 export const fetchTaskList = async (projectId: number) => {
