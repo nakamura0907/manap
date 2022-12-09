@@ -1,6 +1,6 @@
 import fetch from "@lib/fetch";
 
-type LoginByEmailRequestData = {
+type LoginByEmailRequest = {
   email: string;
   password: string;
 };
@@ -10,6 +10,6 @@ type LoginByEmailResponse = {
   token: string;
 };
 
-export const loginByEmail = async (data: LoginByEmailRequestData) => {
+export const loginByEmail = async (data: LoginByEmailRequest) => {
   return await fetch.post<LoginByEmailResponse>("/auth/login", data);
 };
