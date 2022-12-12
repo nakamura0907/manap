@@ -11,7 +11,7 @@ import { TaskPriority, taskPriority } from "@features/task/types";
 export type TaskAddModalFormValues = {
   title: string;
   description?: string;
-  dueDate: DatePickerProps["value"];
+  due: DatePickerProps["value"];
   priority: TaskPriority;
 };
 type TaskAddModalProps = Omit<ModalProps, "onOk" | "title"> & {
@@ -42,7 +42,7 @@ export const TaskAddModal = (props: TaskAddModalProps) => {
         </Form.Item>
         <Form.Item
           label="期限"
-          name="dueDate"
+          name="due"
           rules={[
             {
               required: true,

@@ -42,6 +42,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
           id: projectIdNum,
           roleId: result.data.roleId,
         });
+        console.log(`layout.tsx: ${prevProjectId} -> ${projectIdNum}`);
       }
 
       setProjectId(projectIdNum);

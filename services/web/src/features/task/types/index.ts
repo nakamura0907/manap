@@ -9,6 +9,6 @@ export type Task = {
   title: string;
   description?: string;
   status: TaskStatus;
-  dueDate: Date;
+  due: Date;
   priority: TaskPriority;
 };
