@@ -37,6 +37,7 @@ model projects {
   delete_flag         Boolean               @default(false)
   feature_suggestions feature_suggestions[]
   projects_members    projects_members[]
+  tasks               tasks[]
 }
 
 model projects_members {
@@ -90,4 +91,17 @@ model feature_suggestions_comments {
   @@index([suggestion_id], map: "ref_feature-suggestions_comments_suggestion_id")
   @@index([user_id], map: "ref_feature-suggestions_comments_user_id")
   @@map("feature-suggestions_comments")
+}
+
+model tasks {
+  id          Int      @id @default(autoincrement())
+  project_id  Int
+  title       String   @db.Text
+  description String   @db.Text
+  status      Int
+  due         DateTime @db.Date
+  priority    Int
+  projects    projects @relation(fields: [project_id], references: [id], onUpdate: Restrict, map: "ref_tasks_project_id")
+
+  @@index([project_id], map: "ref_tasks_project_id")
 }
