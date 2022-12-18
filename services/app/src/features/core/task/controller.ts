@@ -3,6 +3,7 @@ import {
   tasksQueryService,
   tasksRepository,
 } from "@/container";
+import Task from "@/features/core/task/domain/model/Task";
 import { GeneratedId } from "@/features/shared/Id";
 import Exception from "@/util/exception/Exception";
 import { Request, Response, NextFunction } from "express";
@@ -44,16 +45,29 @@ const taskController = (): TaskController => {
       const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
-      console.log(projectId);
-      console.log(title, description, status, due, priority);
-
       // 所属確認
       if (!(await projectMemberService.isExist(projectId, userId)))
         throw new Exception("プロジェクトに参加していません", 403);
 
       // 新規タスク作成
+      const registerTask = Task.create(
+        projectId,
+        title,
+        description,
+        status,
+        due,
+        priority
+      );
+      const result = await tasksRepository.add(registerTask);
 
-      res.status(200).send({});
+      res.status(200).send({
+        id: result.id.value,
+        title: result.title.value,
+        description: result.description.value,
+        status: result.status.value,
+        due: result.due,
+        priority: result.priority.value,
+      });
     })().catch(next);
   };
 
