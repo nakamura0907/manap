@@ -4,7 +4,9 @@ import ISuggestionsQueryService from "@/features/core/feature-suggestion/suggest
 import ISuggestionsRepository from "@/features/core/feature-suggestion/suggestion/domain/repository/ISuggestionsRepository";
 import PrismaSuggestionsQueryService from "@/features/core/feature-suggestion/suggestion/repository/PrismaSuggestionsQueryService";
 import PrismaSuggestionsRepository from "@/features/core/feature-suggestion/suggestion/repository/PrismaSuggestionsRepository";
+import ITasksQueryService from "@/features/core/task/domain/repository/ITasksQueryService";
 import ITasksRepository from "@/features/core/task/domain/repository/ITasksRepository";
+import PrismaTasksQueryService from "@/features/core/task/repository/PrismaTasksQueryService";
 import PrismaTasksRepository from "@/features/core/task/repository/PrismaTasksRepository";
 import { container } from "tsyringe";
 import IAuthRepository from "./features/core/auth/domain/repository/IAuthRepository";
@@ -96,9 +98,14 @@ export const rolesRepository =
   container.resolve<IRolesRepository>("rolesRepository");
 
 // Task
+container.register("tasksQueryService", {
+  useClass: PrismaTasksQueryService,
+});
 container.register("tasksRepository", {
   useClass: PrismaTasksRepository,
 });
 
+export const tasksQueryService =
+  container.resolve<ITasksQueryService>("tasksQueryService");
 export const tasksRepository =
   container.resolve<ITasksRepository>("tasksRepository");

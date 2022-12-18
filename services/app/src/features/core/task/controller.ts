@@ -1,4 +1,8 @@
-import { projectMemberService, tasksRepository } from "@/container";
+import {
+  projectMemberService,
+  tasksQueryService,
+  tasksRepository,
+} from "@/container";
 import { GeneratedId } from "@/features/shared/Id";
 import Exception from "@/util/exception/Exception";
 import { Request, Response, NextFunction } from "express";
@@ -7,7 +11,7 @@ type TaskController = {
   /**
    * 新規タスク作成
    */
-  create: (req: Request, res: Response, next: NextFunction) => void;
+  add: (req: Request, res: Response, next: NextFunction) => void;
   /**
    * プロジェクトIDからタスク一覧を取得
    */
@@ -27,7 +31,7 @@ type TaskController = {
 };
 
 const taskController = (): TaskController => {
-  const create = (req: Request, res: Response, next: NextFunction) => {
+  const add = (req: Request, res: Response, next: NextFunction) => {
     (async () => {
       const reqUserId = req.user?.id;
       const reqProjectId = req.params.projectId;
@@ -69,11 +73,10 @@ const taskController = (): TaskController => {
         throw new Exception("プロジェクトに参加していません", 403);
 
       // タスク一覧取得
-
-      console.log(projectId);
+      const result = await tasksQueryService.fetchList(projectId);
 
       res.status(200).send({
-        tasks: [],
+        tasks: result.tasks,
       });
     })().catch(next);
   };
@@ -91,15 +94,14 @@ const taskController = (): TaskController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const taskId = GeneratedId.validate(Number(reqTaskId) || -1);
 
-      console.log(projectId, taskId);
-
       // 所属確認
       if (!(await projectMemberService.isExist(projectId, userId)))
         throw new Exception("プロジェクトに参加していません", 403);
 
       // タスク取得
+      const result = await tasksQueryService.fetchById(projectId, taskId);
 
-      res.status(200).send({});
+      res.status(200).send(result.toObject);
     })().catch(next);
   };
 
@@ -156,7 +158,7 @@ const taskController = (): TaskController => {
   };
 
   return {
-    create,
+    add,
     fetchList,
     fetchById,
     update,

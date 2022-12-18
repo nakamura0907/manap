@@ -98,9 +98,9 @@ model tasks {
   project_id  Int
   title       String   @db.Text
   description String   @db.Text
-  status      Int
+  status      String   @db.Text
   due         DateTime @db.Date
-  priority    Int
+  priority    String   @db.Text
   projects    projects @relation(fields: [project_id], references: [id], onUpdate: Restrict, map: "ref_tasks_project_id")
 
   @@index([project_id], map: "ref_tasks_project_id")

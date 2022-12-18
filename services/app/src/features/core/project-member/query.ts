@@ -19,7 +19,7 @@ export class MemberListDTO {
     Object.freeze(this);
   }
 
-  get members(): Member[] {
+  get members() {
     return this._members;
   }
 }
