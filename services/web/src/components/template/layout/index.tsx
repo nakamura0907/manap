@@ -42,6 +42,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
           id: projectIdNum,
           roleId: result.data.roleId,
         });
+        console.log(`layout.tsx: ${prevProjectId} -> ${projectIdNum}`);
       }
 
       setProjectId(projectIdNum);
@@ -62,6 +63,9 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
         <ul>
           <li>
             <Link href={`/projects/${projectId}`}>ダッシュボード</Link>
+          </li>
+          <li>
+            <Link href={`/projects/${projectId}/tasks`}>タスクボード</Link>
           </li>
           <li>
             <Link href={`/projects/${projectId}/gantt_charts`}>

@@ -9,6 +9,7 @@ import {
   featureSuggestionRouter,
   projectMemberRouter,
   projectRouter,
+  taskRouter,
 } from "@/frameworks/webserver/router";
 
 const app = express();
@@ -32,6 +33,7 @@ app.use("/api/v1/projects", projectRouter(express));
 app.use(
   "/api/v1/projects/:projectId",
   featureSuggestionRouter(express),
+  taskRouter(express),
   projectMemberRouter(express)
 );
 

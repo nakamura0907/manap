@@ -21,7 +21,7 @@ const Login: NextPage = () => {
   const setAuth = useSetAuth();
   const [form] = Form.useForm<Values>();
 
-  const handleFinish = async (values: Values) => {
+  const handleLogin = async (values: Values) => {
     try {
       const result = await loginByEmail({
         email: values.email,
@@ -39,7 +39,7 @@ const Login: NextPage = () => {
     }
   };
 
-  const handleGithubLogin = async () => {
+  const handleLoginGithub = async () => {
     window.location.href = "http://localhost:3001/api/v1/auth/github";
   };
 
@@ -48,7 +48,7 @@ const Login: NextPage = () => {
       <div>
         <h1>Login</h1>
       </div>
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+      <Form form={form} layout="vertical" onFinish={handleLogin}>
         <Form.Item
           label="メールアドレス"
           name="email"
@@ -92,7 +92,7 @@ const Login: NextPage = () => {
         <div>
           <GithubLoginButton
             text="Githubアカウントでログイン"
-            onClick={handleGithubLogin}
+            onClick={handleLoginGithub}
           />
         </div>
       </div>
