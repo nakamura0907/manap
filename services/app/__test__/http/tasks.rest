@@ -1,0 +1,36 @@
+@projectId = 2
+@taskId = 1
+
+### タスクの追加
+POST http://localhost:3001/api/v1/projects/{{projectId}}/tasks
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "タスクボード機能",
+  "status": "未着手",
+  "priority": "高",
+  "due": "2022-12-20"
+}
+
+### タスク一覧の取得
+GET http://localhost:3001/api/v1/projects/{{projectId}}/tasks
+Authorization: Bearer {{token}}
+
+
+### タスク詳細の取得
+GET http://localhost:3001/api/v1/projects/{{projectId}}/tasks/{{taskId}}
+Authorization: Bearer {{token}}
+
+### タスクの更新
+PUT http://localhost:3001/api/v1/projects/{{projectId}}/tasks/{{taskId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "タスクボード機能改"
+}
+
+### タスクの削除
+DELETE http://localhost:3001/api/v1/projects/{{projectId}}/tasks/2
+Authorization: Bearer {{token}}

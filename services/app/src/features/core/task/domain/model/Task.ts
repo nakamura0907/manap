@@ -8,7 +8,7 @@ type ModifyObjefct = {
   title?: string;
   description?: string;
   status?: string;
-  due?: Date;
+  due?: string;
   priority?: string;
 };
 
@@ -44,12 +44,13 @@ class Task<T extends Id = Id> {
     title: string,
     description: string,
     status: string,
-    due: Date,
+    due: string,
     priority: string
   ) {
     const validatedTitle = TaskTitle.validate(title);
     const validatedDescription = TaskDescription.validate(description);
     const validatedStatus = TaskStatus.validate(status);
+    const validatedDue = new Date(due);
     const validatedPriority = TaskPriority.validate(priority);
 
     return new Task(
@@ -58,7 +59,7 @@ class Task<T extends Id = Id> {
       validatedTitle,
       validatedDescription,
       validatedStatus,
-      due,
+      validatedDue,
       validatedPriority
     );
   }
@@ -113,7 +114,7 @@ class Task<T extends Id = Id> {
     const status = modifyObj.status
       ? TaskStatus.validate(modifyObj.status)
       : this._status;
-    const due = modifyObj.due ? modifyObj.due : this._due;
+    const due = modifyObj.due ? new Date(modifyObj.due) : this._due;
     const priority = modifyObj.priority
       ? TaskPriority.validate(modifyObj.priority)
       : this._priority;

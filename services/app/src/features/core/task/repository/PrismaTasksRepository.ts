@@ -28,11 +28,12 @@ class PrismaTasksRepository implements ITasksRepository {
       const id = new GeneratedId(result.id);
       return task.setId(id);
     } catch (e) {
+      console.log(e);
       throw new Exception("タスクの追加に失敗しました");
     }
   }
 
-  async find(taskId: GeneratedId, projectId: GeneratedId) {
+  async find(projectId: GeneratedId, taskId: GeneratedId) {
     try {
       const task = await prisma.tasks.findFirst({
         where: {
