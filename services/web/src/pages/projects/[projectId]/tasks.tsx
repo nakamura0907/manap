@@ -1,8 +1,9 @@
+import type { NextPage } from "next";
 import React from "react";
 import Button from "@components/ui/button";
-import type { NextPage } from "next";
 import {
   addTask,
+  fetchTaskList,
   FetchTaskListResponse,
   removeTask,
   TaskAddModal,
@@ -14,31 +15,6 @@ import {
 import Form from "@components/ui/form";
 import { projectContext } from "@providers/project";
 
-// TODO: 静的なページを作成する
-/**
- * 1. ~追加モーダル~
- * 2. ~タスク一覧~
- * 3. タスク詳細モーダル
- */
-
-const mockTasks: FetchTaskListResponse["tasks"] = [
-  {
-    id: 1,
-    title: "モックタスク1",
-    status: "未着手",
-  },
-  {
-    id: 2,
-    title: "モックタスク2",
-    status: "完了済み",
-  },
-  {
-    id: 3,
-    title: "モックタスク3",
-    status: "進行中",
-  },
-];
-
 type State = {
   tasks: FetchTaskListResponse["tasks"];
   isAddModalOpen: boolean;
@@ -46,8 +22,7 @@ type State = {
 };
 
 const initialState: State = {
-  // tasks: [],
-  tasks: mockTasks,
+  tasks: [],
   isAddModalOpen: false,
   isDetailModalOpen: undefined,
 };
@@ -67,12 +42,15 @@ const Tasks: NextPage = () => {
 
   React.useEffect(() => {
     (async () => {
-      // const result = await fetchTasks();
-      // setTasks(result.data.tasks);
+      const projectId = project?.id;
+      if (!projectId) return;
+
+      const result = await fetchTaskList(projectId);
+      setTasks(result.data.tasks);
     })().catch((error) => {
       console.error(error);
     });
-  }, []);
+  }, [project]);
 
   /**
    * 新規タスクの追加
@@ -98,7 +76,9 @@ const Tasks: NextPage = () => {
       const result = await addTask(project!.id, data);
       console.log(result);
 
+      setTasks([...tasks, result.data]);
       addForm.resetFields();
+      setIsAddModalOpen(initialState.isAddModalOpen);
     } catch (error) {
       console.error(error);
     }
