@@ -3,6 +3,8 @@ import { GeneratedId } from "@/features/shared/Id";
 
 interface ITasksRepository {
   add(task: Task): Promise<Task<GeneratedId>>;
+  find(projectId: GeneratedId, taskId: GeneratedId): Promise<Task<GeneratedId>>;
+  update(task: Task<GeneratedId>): Promise<void>;
   remove(projectId: GeneratedId, taskId: GeneratedId): Promise<void>;
 }
 

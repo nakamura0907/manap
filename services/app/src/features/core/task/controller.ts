@@ -134,16 +134,29 @@ const taskController = (): TaskController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const taskId = GeneratedId.validate(Number(reqTaskId) || -1);
 
-      console.log(projectId, taskId);
-      console.log(title, description, status, due, priority);
-
       // 所属確認
       if (!(await projectMemberService.isExist(projectId, userId)))
         throw new Exception("プロジェクトに参加していません", 403);
 
       // タスク更新
+      const currentTask = await tasksRepository.find(projectId, taskId);
+      const updatedTask = currentTask.copyWith({
+        title,
+        description,
+        status,
+        due,
+        priority,
+      });
+      await tasksRepository.update(updatedTask);
 
-      res.status(200).send({});
+      res.status(200).send({
+        id: updatedTask.id.value,
+        title: updatedTask.title.value,
+        description: updatedTask.description.value,
+        status: updatedTask.status.value,
+        due: updatedTask.due,
+        priority: updatedTask.priority.value,
+      });
     })().catch(next);
   };
 
