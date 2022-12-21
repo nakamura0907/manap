@@ -117,13 +117,19 @@ const chatRoomController = (): ChatRoomController => {
         throw new Exception("チャットルームを更新する権限がありません", 403);
 
       // チャットルーム更新
-      console.log("update chat room");
-      console.log("userId: ", userId.value);
-      console.log("projectId: ", projectId.value);
-      console.log("roomId: ", roomId.value);
-      console.log("name: ", name);
+      const currentChatRoom = await chatsRoomsRepository.find(
+        projectId,
+        roomId
+      );
+      const updatedChatRoom = currentChatRoom.copyWith({ name });
 
-      res.status(200).send({});
+      await chatsRoomsRepository.update(updatedChatRoom);
+
+      res.status(200).send({
+        id: updatedChatRoom.id.value,
+        name: updatedChatRoom.name.value,
+        createdAt: updatedChatRoom.createdAt,
+      });
     })().catch(next);
   };
 
