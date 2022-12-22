@@ -49,6 +49,10 @@ class PrismaTasksQueryService implements ITasksQueryService {
         TaskPriority.getPriority(task.priority)
       );
     } catch (e) {
+      console.log(e);
+      if (e instanceof Exception) {
+        throw e;
+      }
       throw new Exception("タスクの取得に失敗しました");
     }
   }

@@ -1,5 +1,10 @@
 import Exception from "@/util/exception/Exception";
-import { chatsRoomsRepository, rolesRepository } from "@/container";
+import {
+  chatsRoomsQueryService,
+  chatsRoomsRepository,
+  projectMemberService,
+  rolesRepository,
+} from "@/container";
 import { GeneratedId } from "@/features/shared/Id";
 import { checkPermission } from "@common/role";
 import { NextFunction, Request, Response } from "express";
@@ -32,6 +37,10 @@ const chatRoomController = (): ChatRoomController => {
       const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
+
       // 権限確認
       const roleId = await rolesRepository.fetchRoleId(projectId, userId.value);
       if (!checkPermission(roleId, "chat-room:create"))
@@ -60,12 +69,16 @@ const chatRoomController = (): ChatRoomController => {
       const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
 
-      // チャットルーム一覧取得
-      console.log("fetch chat room list");
-      console.log("userId: ", userId.value);
-      console.log("projectId: ", projectId.value);
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
-      res.status(200).send({});
+      // チャットルーム一覧取得
+      const result = await chatsRoomsQueryService.fetchList(projectId);
+
+      res.status(200).send({
+        rooms: result.rooms,
+      });
     })().catch(next);
   };
 
@@ -82,15 +95,16 @@ const chatRoomController = (): ChatRoomController => {
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const roomId = GeneratedId.validate(Number(reqRoomId) || -1);
 
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
+
       // ルーム所属確認
 
       // チャットルーム詳細取得
-      console.log("fetch chat room by id");
-      console.log("userId: ", userId.value);
-      console.log("projectId: ", projectId.value);
-      console.log("roomId: ", roomId.value);
+      const result = await chatsRoomsQueryService.fetchById(roomId);
 
-      res.status(200).send({});
+      res.status(200).send(result.toObject);
     })().catch(next);
   };
 
@@ -108,6 +122,10 @@ const chatRoomController = (): ChatRoomController => {
       const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const roomId = GeneratedId.validate(Number(reqRoomId) || -1);
+
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // ルーム所属確認
 
@@ -145,6 +163,10 @@ const chatRoomController = (): ChatRoomController => {
       const userId = new GeneratedId(reqUserId);
       const projectId = GeneratedId.validate(Number(reqProjectId) || -1);
       const roomId = GeneratedId.validate(Number(reqRoomId) || -1);
+
+      // 所属確認
+      if (!(await projectMemberService.isExist(projectId, userId)))
+        throw new Exception("プロジェクトに参加していません", 403);
 
       // ルーム所属確認
 
