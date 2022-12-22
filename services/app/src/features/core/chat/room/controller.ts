@@ -154,10 +154,7 @@ const chatRoomController = (): ChatRoomController => {
         throw new Exception("チャットルームを削除する権限がありません", 403);
 
       // チャットルーム削除
-      console.log("remove chat room");
-      console.log("userId: ", userId.value);
-      console.log("projectId: ", projectId.value);
-      console.log("roomId: ", roomId.value);
+      await chatsRoomsRepository.remove(roomId);
 
       res.status(200).end();
     })().catch(next);

@@ -57,6 +57,31 @@ class PrismaChatsRoomsRepository implements IChatsRoomsRepository {
       throw new Exception("チャットルームの更新に失敗しました");
     }
   }
+
+  async remove(roomId: GeneratedId) {
+    try {
+      const room = await prisma.chat_rooms.findFirst({
+        where: {
+          id: roomId.value,
+        },
+      });
+      if (!room) throw new Exception("チャットルームが見つかりません", 404);
+
+      await prisma.chat_comments.deleteMany({
+        where: {
+          room_id: roomId.value,
+        },
+      });
+      await prisma.chat_rooms.delete({
+        where: {
+          id: roomId.value,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Exception("チャットルームの削除に失敗しました");
+    }
+  }
 }
 
 export default PrismaChatsRoomsRepository;
