@@ -59,8 +59,6 @@ const Tasks: NextPage = () => {
    * apiを叩いてタスクを追加する
    */
   const handleAddTask = async (values: TaskAddModalFormValues) => {
-    console.log(values);
-
     try {
       const { due, ...rest } = values;
       if (!due) {
@@ -74,7 +72,6 @@ const Tasks: NextPage = () => {
       };
 
       const result = await addTask(project!.id, data);
-      console.log(result);
 
       setTasks([...tasks, result.data]);
       addForm.resetFields();

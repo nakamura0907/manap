@@ -6,6 +6,7 @@ import errorHandling from "@frameworks/webserver/middlewares/errorHandling";
 import passport from "@/features/core/auth/passport";
 import {
   authRouter,
+  chatRouter,
   featureSuggestionRouter,
   projectMemberRouter,
   projectRouter,
@@ -32,6 +33,7 @@ app.use("/api/v1", authRouter(express));
 app.use("/api/v1/projects", projectRouter(express));
 app.use(
   "/api/v1/projects/:projectId",
+  chatRouter(express),
   featureSuggestionRouter(express),
   taskRouter(express),
   projectMemberRouter(express)
