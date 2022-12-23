@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { fetchRoomById, FetchRoomByIdResponse } from "@features/chat";
 import PageHeader from "@components/ui/page-header";
 import Button from "@components/ui/button";
+import { io } from "socket.io-client";
+import { authContext } from "@providers/auth";
 
 type State = {
   room?: FetchRoomByIdResponse;
@@ -14,8 +16,11 @@ const initialState: State = {
   room: undefined,
 };
 
+const socket = io("http://localhost:3001"); // TODO: 可能ならfeaturesに移動させる
+const useAuth = () => React.useContext(authContext);
 const useProject = () => React.useContext(projectContext);
 const ChatRoom: NextPage = () => {
+  const auth = useAuth();
   const project = useProject();
   const router = useRouter();
 
@@ -25,8 +30,9 @@ const ChatRoom: NextPage = () => {
     (async () => {
       const { roomId } = router.query;
       const projectId = project?.id;
+      const userId = auth?.userId;
 
-      if (!roomId || !projectId) return;
+      if (!roomId || !projectId || !userId) return;
       if (Array.isArray(roomId)) throw new Error("不正なルームIDです");
 
       // ルーム情報取得
@@ -34,10 +40,20 @@ const ChatRoom: NextPage = () => {
       setRoom(result.data);
 
       // Socket接続
-      console.log(result.data);
+      // TODO: 動作確認
+      socket.on("connect", () => console.log(`socket connected`));
+      socket.emit("join", {
+        roomId,
+        userId,
+      });
     })().catch((error) => {
       console.log(error);
     });
+
+    return () => {
+      socket.off("connect");
+      socket.off("join");
+    };
   }, [project]);
 
   if (!room) return <></>;

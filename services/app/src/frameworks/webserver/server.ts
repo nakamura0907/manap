@@ -12,6 +12,8 @@ import {
   projectRouter,
   taskRouter,
 } from "@/frameworks/webserver/router";
+import { Server } from "socket.io";
+import chatSocketEvents from "@/features/core/chat/socket";
 
 const app = express();
 const server = http.createServer(app);
@@ -38,6 +40,14 @@ app.use(
   taskRouter(express),
   projectMemberRouter(express)
 );
+
+// WebSocket
+const io = new Server(server, {
+  cors: {
+    origin: config.server.cors.origin,
+  },
+});
+chatSocketEvents(io);
 
 // エラーハンドリング
 errorHandling(app);
