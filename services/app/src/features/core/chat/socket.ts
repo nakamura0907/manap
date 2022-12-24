@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 type JoinEventData = {
   userId: number;
-  roomid: string;
+  roomId: string;
 };
 
 type CommentEventData = {
@@ -25,7 +25,7 @@ const chatSocketEvents = (io: Server) => {
 
         // ルーム参加
         userId = data.userId;
-        roomId = data.roomid;
+        roomId = data.roomId;
         socket.join(roomId);
 
         // ルーム初期化
