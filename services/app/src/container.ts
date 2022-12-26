@@ -1,3 +1,5 @@
+import IChatsCommentsRepository from "@/features/core/chat/comment/domain/repository/IChatsCommentsRepository";
+import PrismaChatsCommentsRepository from "@/features/core/chat/comment/repository/PrismaChatsCommentsRepository";
 import IChatsRoomsQueryService from "@/features/core/chat/room/domain/repository/IChatsRoomsQueryService";
 import IChatsRoomsRepository from "@/features/core/chat/room/domain/repository/IChatsRoomsRepository";
 import PrismaChatsRoomsQueryService from "@/features/core/chat/room/repository/PrismaChatsRoomsQueryService";
@@ -36,6 +38,9 @@ export const authRepository =
   container.resolve<IAuthRepository>("authRepository");
 
 // Chat
+container.register("chatsCommentsRepository", {
+  useClass: PrismaChatsCommentsRepository,
+});
 container.register("chatsRoomsQueryService", {
   useClass: PrismaChatsRoomsQueryService,
 });
@@ -43,6 +48,8 @@ container.register("chatsRoomsRepository", {
   useClass: PrismaChatsRoomsRepository,
 });
 
+export const chatsCommentsRepository =
+  container.resolve<IChatsCommentsRepository>("chatsCommentsRepository");
 export const chatsRoomsQueryService =
   container.resolve<IChatsRoomsQueryService>("chatsRoomsQueryService");
 export const chatsRoomsRepository = container.resolve<IChatsRoomsRepository>(

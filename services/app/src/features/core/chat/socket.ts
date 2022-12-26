@@ -1,3 +1,4 @@
+import chatCommentController from "@/features/core/chat/comment/controller";
 import { Server } from "socket.io";
 
 type JoinEventData = {
@@ -10,6 +11,8 @@ type CommentEventData = {
 };
 
 const chatSocketEvents = (io: Server) => {
+  const controller = chatCommentController();
+
   io.on("connection", (socket) => {
     console.log(`a user connected: ${socket.id}`);
     let userId: number;
@@ -21,7 +24,7 @@ const chatSocketEvents = (io: Server) => {
     socket.on("join", async (data: JoinEventData) => {
       try {
         // コメント取得
-        console.log(data);
+        const result = await controller.fetchList(data.roomId, data.userId);
 
         // ルーム参加
         userId = data.userId;
@@ -30,7 +33,7 @@ const chatSocketEvents = (io: Server) => {
 
         // ルーム初期化
         io.to(roomId).emit("init", {
-          comments: [],
+          comments: result.comments,
         });
       } catch (error) {
         console.error(error);
@@ -46,12 +49,10 @@ const chatSocketEvents = (io: Server) => {
     socket.on("comment", async (data: CommentEventData) => {
       try {
         // コメント保存
-        console.log("コメント保存");
-        console.log(`userId: ${userId}, roomId: ${roomId}`);
-        console.log(`data: ${data}`);
+        const result = await controller.add(roomId, userId, data);
 
         // レスポンス
-        io.to(roomId).emit("comment", {});
+        io.to(roomId).emit("comment", result);
       } catch (error) {
         console.error(error);
         socket.emit("error", {
