@@ -2,16 +2,22 @@ import type { NextPage } from "next";
 import React from "react";
 import { projectContext } from "@providers/project";
 import { useRouter } from "next/router";
-import { fetchRoomById, FetchRoomByIdResponse } from "@features/chat";
+import {
+  ChatComment,
+  fetchRoomById,
+  FetchRoomByIdResponse,
+} from "@features/chat";
 import PageHeader from "@components/ui/page-header";
 import Button from "@components/ui/button";
 import { io } from "socket.io-client";
 import { authContext } from "@providers/auth";
 import Form from "@components/ui/form";
 import Input from "@components/ui/input";
+import List from "@components/ui/list";
 
 type State = {
   room?: FetchRoomByIdResponse;
+  comments: ChatComment[];
 };
 
 type FormValues = {
@@ -20,6 +26,7 @@ type FormValues = {
 
 const initialState: State = {
   room: undefined,
+  comments: [],
 };
 
 const socket = io("http://localhost:3001");
@@ -33,6 +40,7 @@ const ChatRoom: NextPage = () => {
 
   const [form] = Form.useForm<FormValues>();
   const [room, setRoom] = React.useState(initialState.room);
+  const [comments, setComments] = React.useState(initialState.comments);
 
   React.useEffect(() => {
     (async () => {
@@ -49,12 +57,12 @@ const ChatRoom: NextPage = () => {
 
       // Socket接続
       socket.on("connect", () => console.log(`socket connected`));
-      socket.on("init", (data) => console.log(data));
+      socket.on("init", (data) => setComments(data.comments));
       socket.emit("join", {
         roomId,
         userId,
       });
-      socket.on("comment", (data) => console.log(data));
+      socket.on("comment", (data) => setComments([...comments, data]));
     })().catch((error) => {
       console.log(error);
     });
@@ -69,6 +77,7 @@ const ChatRoom: NextPage = () => {
 
   const handleFinish = (values: FormValues) => {
     socket.emit("comment", values);
+    form.resetFields();
   };
 
   if (!room) return <></>;
@@ -79,7 +88,17 @@ const ChatRoom: NextPage = () => {
         onBack={() => router.back()}
         extra={[<Button key={1}>編集</Button>]}
       />
-      <div>chat list</div>
+      <List
+        itemLayout="horizontal"
+        dataSource={comments}
+        renderItem={(item) => (
+          <List.Item key={item.id}>
+            <List.Item.Meta title={item.user.nickname} />
+            {item.body}
+            {item.createdAt}
+          </List.Item>
+        )}
+      />
       <Form form={form} onFinish={handleFinish}>
         <Form.Item
           name="body"
