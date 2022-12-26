@@ -5,6 +5,7 @@ import {
 } from "../components/template/layout";
 import AppProvider from "../providers/app";
 
+import "antd/dist/antd.css";
 import "../styles/globals.css";
 
 const Layout = ({ route, children }: { route: string; children: any }) => {

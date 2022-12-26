@@ -1,3 +1,4 @@
 - クライアント側Github認証のエラー解消
   https://stackoverflow.com/questions/43693447/oauth2-0-authentication-using-github-with-front-end-and-back-end-running-on-di
 
+- プロジェクトの在籍確認をミドルウェアに

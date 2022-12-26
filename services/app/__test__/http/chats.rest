@@ -1,0 +1,32 @@
+@projectId = 2
+@roomId = 1
+
+### チャットルームの作成
+POST http://localhost:3001/api/v1/projects/{{projectId}}/chats/rooms
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "general"
+}
+
+### チャットルームの一覧
+GET http://localhost:3001/api/v1/projects/{{projectId}}/chats/rooms
+Authorization: Bearer {{token}}
+
+### チャットルームの詳細
+GET http://localhost:3001/api/v1/projects/{{projectId}}/chats/rooms/{{roomId}}
+Authorization: Bearer {{token}}
+
+### チャットルームの更新
+PUT http://localhost:3001/api/v1/projects/{{projectId}}/chats/rooms/{{roomId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "general改"
+}
+
+### チャットルームの削除
+DELETE http://localhost:3001/api/v1/projects/{{projectId}}/chats/rooms/{{roomId}}
+Authorization: Bearer {{token}}

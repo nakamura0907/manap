@@ -57,6 +57,9 @@ const permission = [
   "member:update",
   "member:remove",
   "feature-suggestion:update",
+  "chat-room:create",
+  "chat-room:update",
+  "chat-room:remove",
 ] as const;
 export type Permission = typeof permission;
 
@@ -79,6 +82,9 @@ export const rules: Rules = {
       "project:remove",
       "member:read",
       "feature-suggestion:update",
+      "chat-room:create",
+      "chat-room:update",
+      "chat-room:remove",
     ],
     dynamic: {
       "member:add": (object) => {
@@ -102,7 +108,13 @@ export const rules: Rules = {
     },
   },
   LEADER: {
-    static: ["project:update", "member:read"],
+    static: [
+      "project:update",
+      "member:read",
+      "chat-room:create",
+      "chat-room:update",
+      "chat-room:remove",
+    ],
     dynamic: {
       "member:add": (object) => {
         if (object.targetRoleId === ROLE_LIST.ADMINISTRATOR.id) return false;
@@ -129,7 +141,12 @@ export const rules: Rules = {
     },
   },
   CLIENT_LEADER: {
-    static: ["member:read"],
+    static: [
+      "member:read",
+      "chat-room:create",
+      "chat-room:update",
+      "chat-room:remove",
+    ],
     dynamic: {
       "member:add": (object) => {
         const { targetRoleId } = object;

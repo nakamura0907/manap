@@ -6,11 +6,14 @@ import errorHandling from "@frameworks/webserver/middlewares/errorHandling";
 import passport from "@/features/core/auth/passport";
 import {
   authRouter,
+  chatRouter,
   featureSuggestionRouter,
   projectMemberRouter,
   projectRouter,
   taskRouter,
 } from "@/frameworks/webserver/router";
+import { Server } from "socket.io";
+import chatSocketEvents from "@/features/core/chat/socket";
 
 const app = express();
 const server = http.createServer(app);
@@ -32,10 +35,19 @@ app.use("/api/v1", authRouter(express));
 app.use("/api/v1/projects", projectRouter(express));
 app.use(
   "/api/v1/projects/:projectId",
+  chatRouter(express),
   featureSuggestionRouter(express),
   taskRouter(express),
   projectMemberRouter(express)
 );
+
+// WebSocket
+const io = new Server(server, {
+  cors: {
+    origin: config.server.cors.origin,
+  },
+});
+chatSocketEvents(io);
 
 // エラーハンドリング
 errorHandling(app);
