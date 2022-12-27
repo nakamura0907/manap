@@ -24,3 +24,5 @@ const FeatureSuggestions: NextPage = () => {
     </>
   );
 };
+
+export default FeatureSuggestions;

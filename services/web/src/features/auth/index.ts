@@ -14,3 +14,10 @@ export const fetchToken = (): string | undefined => {
   const cookies = parseCookies();
   return cookies.token;
 };
+
+/**
+ * Cookieに保存されているトークンを削除する
+ */
+export const removeToken = () => {
+  setCookie(null, "token", "");
+};
