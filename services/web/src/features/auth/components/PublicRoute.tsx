@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 type Props = React.PropsWithChildren & {};
 
 const useAuth = () => React.useContext(authContext);
-const UnAuthRoute: React.FC<Props> = ({ children }) => {
+export const PublicRoute: React.FC<Props> = ({ children }) => {
   const router = useRouter();
   const auth = useAuth();
 
@@ -16,5 +16,3 @@ const UnAuthRoute: React.FC<Props> = ({ children }) => {
     return <>{children}</>;
   }
 };
-
-export default UnAuthRoute;

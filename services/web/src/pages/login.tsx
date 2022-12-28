@@ -4,14 +4,13 @@ import Divider from "@components/ui/divider";
 import Form from "@components/ui/form";
 import Input from "@components/ui/input";
 import Link from "@components/ui/link";
+import message from "@components/ui/message";
 import React from "react";
 import { FormButtonSpace } from "@components/ui/space";
-import { loginByEmail, setToken } from "@features/auth";
+import { loginByEmail, PublicRoute, setToken } from "@features/auth";
 import { setAuthContext } from "@providers/auth";
 import { useRouter } from "next/router";
 import { isFetchError } from "@lib/fetch";
-import message from "@components/ui/message";
-import UnAuthRoute from "@features/auth/components/UnAuthRoute";
 
 type Values = {
   email: string;
@@ -52,7 +51,7 @@ const Login: NextPage = () => {
   };
 
   return (
-    <UnAuthRoute>
+    <PublicRoute>
       <div>
         <h2>ログイン</h2>
       </div>
@@ -107,7 +106,7 @@ const Login: NextPage = () => {
           />
         </div>
       </div>
-    </UnAuthRoute>
+    </PublicRoute>
   );
 };
 

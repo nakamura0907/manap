@@ -3,6 +3,9 @@ import { parseCookies, setCookie } from "@lib/cookie";
 export * from "./api/loginByEmail";
 export * from "./api/verifyToken";
 
+export * from "./components/PrivateRoute";
+export * from "./components/PublicRoute";
+
 /**
  * Cookieにトークンを保存する
  */
