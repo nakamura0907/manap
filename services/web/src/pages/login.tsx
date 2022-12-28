@@ -1,14 +1,17 @@
 import type { NextPage } from "next";
-import React from "react";
 import Button, { GithubLoginButton } from "@components/ui/button";
 import Divider from "@components/ui/divider";
 import Form from "@components/ui/form";
 import Input from "@components/ui/input";
 import Link from "@components/ui/link";
+import React from "react";
 import { FormButtonSpace } from "@components/ui/space";
 import { loginByEmail, setToken } from "@features/auth";
 import { setAuthContext } from "@providers/auth";
 import { useRouter } from "next/router";
+import { isFetchError } from "@lib/fetch";
+import message from "@components/ui/message";
+import UnAuthRoute from "@features/auth/components/UnAuthRoute";
 
 type Values = {
   email: string;
@@ -35,7 +38,12 @@ const Login: NextPage = () => {
 
       router.push("/mypage");
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      if (isFetchError(error)) {
+        message.error(error.response?.data.message ?? "ログインに失敗しました");
+      } else {
+        message.error("ログインに失敗しました");
+      }
     }
   };
 
@@ -44,9 +52,9 @@ const Login: NextPage = () => {
   };
 
   return (
-    <div>
+    <UnAuthRoute>
       <div>
-        <h1>Login</h1>
+        <h2>ログイン</h2>
       </div>
       <Form form={form} layout="vertical" onFinish={handleLogin}>
         <Form.Item
@@ -56,10 +64,12 @@ const Login: NextPage = () => {
             {
               type: "email",
               message: "メールアドレスの形式で入力してください",
+              validateTrigger: "onClick",
             },
             {
               required: true,
               message: "メールアドレスを入力してください",
+              validateTrigger: "onClick",
             },
           ]}
         >
@@ -72,6 +82,7 @@ const Login: NextPage = () => {
             {
               required: true,
               message: "パスワードを入力してください",
+              validateTrigger: "onClick",
             },
           ]}
         >
@@ -79,9 +90,9 @@ const Login: NextPage = () => {
         </Form.Item>
         <Form.Item>
           <FormButtonSpace>
-            <Link href="/signup">アカウントの作成</Link>
+            <Link href="/signup">アカウントを作成</Link>
             <Button type="primary" htmlType="submit">
-              ログイン
+              {process.env.APP_NAME}にログイン
             </Button>
           </FormButtonSpace>
         </Form.Item>
@@ -96,7 +107,7 @@ const Login: NextPage = () => {
           />
         </div>
       </div>
-    </div>
+    </UnAuthRoute>
   );
 };
 
