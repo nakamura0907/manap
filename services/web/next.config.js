@@ -5,6 +5,9 @@ const nextConfig = {
   experimental: {
     externalDir: true,
   },
+  env: {
+    APP_NAME: "Manap",
+  },
 };
 
 module.exports = nextConfig;

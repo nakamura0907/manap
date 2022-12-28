@@ -155,9 +155,9 @@ const BaseLayout: React.FC<BaseLayout> = ({ children, sider }) => {
       <Layout>
         <Header className="flex px-12 bg-white">
           <div className="mr-auto">
-            <h1>
+            <h1 className="text-2xl" style={{ lineHeight: "inherit" }}>
               <Link href="/" className="text-black font-bold">
-                Manap
+                {process.env.APP_NAME}
               </Link>
             </h1>
           </div>
