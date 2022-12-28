@@ -13,7 +13,9 @@ import {
   ProjectCreateModalFormValues,
 } from "@features/project";
 import { isFetchError } from "@lib/fetch";
+import { PrivateRoute } from "@features/auth";
 import { useRouter } from "next/router";
+import { authContext } from "@providers/auth";
 
 type State = {
   isOpen: boolean;
@@ -25,8 +27,10 @@ const initialState: State = {
   projects: [],
 };
 
+const useAuth = () => React.useContext(authContext);
 const MyPage: NextPage = () => {
   const router = useRouter();
+  const auth = useAuth();
 
   const [isOpen, setIsOpen] = React.useState(initialState.isOpen);
   const [projects, setProjects] = React.useState(initialState.projects);
@@ -35,6 +39,7 @@ const MyPage: NextPage = () => {
 
   React.useEffect(() => {
     (async () => {
+      if (!auth) return;
       const result = await fetchList();
 
       setProjects(result.data.projects);
@@ -47,7 +52,7 @@ const MyPage: NextPage = () => {
         message.error("プロジェクト一覧の取得に失敗しました");
       }
     });
-  }, []);
+  }, [auth]);
 
   /**
    * 新規プロジェクトの作成
@@ -76,7 +81,7 @@ const MyPage: NextPage = () => {
   };
 
   return (
-    <div>
+    <PrivateRoute>
       <div>
         <h2>マイページ</h2>
       </div>
@@ -107,7 +112,7 @@ const MyPage: NextPage = () => {
         onFinish={handleCreateProject}
         open={isOpen}
       />
-    </div>
+    </PrivateRoute>
   );
 };
 
