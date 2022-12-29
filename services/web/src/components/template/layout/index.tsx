@@ -11,10 +11,16 @@ import { projectContext, setProjectContext } from "@providers/project";
 import { removeToken } from "@features/auth";
 import { useRouter } from "next/router";
 import { UserOutlined } from "@ant-design/icons";
+import { parseCookies } from "@lib/cookie";
 
 export const DefaultLayout: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
+  React.useEffect(() => {
+    const cookies = parseCookies();
+    console.log(cookies);
+  }, []);
+
   return <BaseLayout>{children}</BaseLayout>;
 };
 
@@ -34,6 +40,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
   React.useEffect(() => {
     (async () => {
       if (!router.isReady) return;
+
       const { projectId } = router.query;
       const projectIdNum = Number(projectId);
       if (
@@ -60,7 +67,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
       console.log(`layout.tsx: ${error}`);
       router.push("/mypage");
     });
-  }, [router, router.query]);
+  }, [router, router.query, project?.id, setProject]);
 
   if (!projectId) return <></>;
 

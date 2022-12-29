@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({
       .finally(() => {
         setIsReady(true);
       });
-  }, []);
+  }, [router]);
 
   if (!isReady) return <></>;
 
