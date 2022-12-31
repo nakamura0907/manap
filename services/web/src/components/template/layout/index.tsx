@@ -11,16 +11,11 @@ import { projectContext, setProjectContext } from "@providers/project";
 import { removeToken } from "@features/auth";
 import { useRouter } from "next/router";
 import { UserOutlined } from "@ant-design/icons";
-import { parseCookies } from "@lib/cookie";
+import { checkPermission } from "@common/role";
 
 export const DefaultLayout: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  React.useEffect(() => {
-    const cookies = parseCookies();
-    console.log(cookies);
-  }, []);
-
   return <BaseLayout>{children}</BaseLayout>;
 };
 
@@ -120,12 +115,15 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
                   <Link href={`/projects/${projectId}/rooms`}>掲示板</Link>
                 ),
               },
-              {
-                key: "設定",
-                label: (
-                  <Link href={`/projects/${projectId}/settings`}>設定</Link>
-                ),
-              },
+              checkPermission(project!.roleId, "project:remove") ||
+              checkPermission(project!.roleId, "project:update")
+                ? {
+                    key: "設定",
+                    label: (
+                      <Link href={`/projects/${projectId}/settings`}>設定</Link>
+                    ),
+                  }
+                : null,
             ]}
           />
         </Sider>
