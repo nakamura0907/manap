@@ -11,6 +11,7 @@ import { projectContext, setProjectContext } from "@providers/project";
 import { removeToken } from "@features/auth";
 import { useRouter } from "next/router";
 import { UserOutlined } from "@ant-design/icons";
+import { checkPermission } from "@common/role";
 
 export const DefaultLayout: React.FC<React.PropsWithChildren> = ({
   children,
@@ -34,6 +35,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
   React.useEffect(() => {
     (async () => {
       if (!router.isReady) return;
+
       const { projectId } = router.query;
       const projectIdNum = Number(projectId);
       if (
@@ -60,7 +62,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
       console.log(`layout.tsx: ${error}`);
       router.push("/mypage");
     });
-  }, [router, router.query]);
+  }, [router, router.query, project?.id, setProject]);
 
   if (!projectId) return <></>;
 
@@ -113,12 +115,15 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
                   <Link href={`/projects/${projectId}/rooms`}>掲示板</Link>
                 ),
               },
-              {
-                key: "設定",
-                label: (
-                  <Link href={`/projects/${projectId}/settings`}>設定</Link>
-                ),
-              },
+              checkPermission(project!.roleId, "project:remove") ||
+              checkPermission(project!.roleId, "project:update")
+                ? {
+                    key: "設定",
+                    label: (
+                      <Link href={`/projects/${projectId}/settings`}>設定</Link>
+                    ),
+                  }
+                : null,
             ]}
           />
         </Sider>
