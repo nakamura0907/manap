@@ -1,22 +1,32 @@
 import type { NextPage } from "next";
-import { PrivateRoute } from "@features/auth";
-import { projectContext } from "@providers/project";
-import Button from "@components/ui/button";
-import List from "@components/ui/list";
-import React from "react";
 import {
   fetchSuggestionList,
   FetchSuggestionListResponse,
 } from "@features/feature-suggestion";
 import { isFetchError } from "@lib/fetch";
+import { PrivateRoute } from "@features/auth";
+import { projectContext } from "@providers/project";
+import Button from "@components/ui/button";
+import List from "@components/ui/list";
 import message from "@components/ui/message";
+import React from "react";
+import Checkbox from "@components/ui/checkbox";
+import { checkPermission } from "@common/role";
 
 type State = {
   suggestions: FetchSuggestionListResponse["suggestions"];
+  isOpen: {
+    addModal: boolean;
+    detailModal: boolean;
+  };
 };
 
 const initialState: State = {
   suggestions: [],
+  isOpen: {
+    addModal: false,
+    detailModal: false,
+  },
 };
 
 const useProject = () => React.useContext(projectContext);
@@ -26,6 +36,7 @@ const FeatureSuggestions: NextPage = () => {
   const [suggestions, setSuggestions] = React.useState(
     initialState.suggestions
   );
+  const [isOpen, setIsOpen] = React.useState(initialState.isOpen);
 
   React.useEffect(() => {
     (async () => {
@@ -59,9 +70,43 @@ const FeatureSuggestions: NextPage = () => {
           }
           renderItem={(item) => (
             <List.Item key={item.id} className={"cursor-pointer"}>
-              <List.Item.Meta title={item.title} />
-              {/* statusによる切り替えー全体の横線 */}
-              {/* approvalのチェックボックス */}
+              <List.Item.Meta
+                title={
+                  <span
+                    className={item.status ? "line-through text-gray-400" : ""}
+                  >
+                    {item.title}
+                  </span>
+                }
+              />
+              <Checkbox
+                checked={item.clientApproval}
+                disabled={
+                  !checkPermission(
+                    project!.roleId,
+                    "feature-suggestion:update",
+                    {
+                      clientApproval: true,
+                    }
+                  )
+                }
+              >
+                クライアント承認
+              </Checkbox>
+              <Checkbox
+                checked={item.vendorApproval}
+                disabled={
+                  !checkPermission(
+                    project!.roleId,
+                    "feature-suggestion:update",
+                    {
+                      vendorApproval: true,
+                    }
+                  )
+                }
+              >
+                ベンダー承認
+              </Checkbox>
             </List.Item>
           )}
         />
