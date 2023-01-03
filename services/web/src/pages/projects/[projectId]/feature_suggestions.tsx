@@ -1,17 +1,21 @@
 import type { NextPage } from "next";
 import {
+  addSuggestion,
   fetchSuggestionList,
   FetchSuggestionListResponse,
+  SuggestionAddModal,
+  SuggestionAddModalFormValues,
 } from "@features/feature-suggestion";
+import { checkPermission } from "@common/role";
 import { isFetchError } from "@lib/fetch";
 import { PrivateRoute } from "@features/auth";
 import { projectContext } from "@providers/project";
 import Button from "@components/ui/button";
+import Checkbox from "@components/ui/checkbox";
+import Form from "@components/ui/form";
 import List from "@components/ui/list";
 import message from "@components/ui/message";
 import React from "react";
-import Checkbox from "@components/ui/checkbox";
-import { checkPermission } from "@common/role";
 
 type State = {
   suggestions: FetchSuggestionListResponse["suggestions"];
@@ -33,6 +37,7 @@ const useProject = () => React.useContext(projectContext);
 const FeatureSuggestions: NextPage = () => {
   const project = useProject();
 
+  const [addForm] = Form.useForm<SuggestionAddModalFormValues>();
   const [suggestions, setSuggestions] = React.useState(
     initialState.suggestions
   );
@@ -54,6 +59,34 @@ const FeatureSuggestions: NextPage = () => {
     });
   }, [project]);
 
+  /**
+   * 新しい機能を提案する
+   */
+  const handleAddSuggestion = async (values: SuggestionAddModalFormValues) => {
+    try {
+      const response = await addSuggestion(project!.id, values);
+
+      setSuggestions((prev) => [...prev, response.data]);
+      setIsOpen({ ...isOpen, addModal: false });
+      addForm.resetFields();
+    } catch (error) {
+      console.log(error);
+      if (isFetchError(error) && error.response) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("新しい機能の提案に失敗しました");
+      }
+    }
+  };
+
+  /**
+   * 追加モーダルを閉じる
+   */
+  const handleCloseAddModal = () => {
+    setIsOpen({ ...isOpen, addModal: false });
+    addForm.resetFields();
+  };
+
   return (
     <PrivateRoute>
       <div>
@@ -65,7 +98,17 @@ const FeatureSuggestions: NextPage = () => {
           dataSource={suggestions}
           header={
             <div>
-              <Button className="ml-auto">新しい機能を提案する</Button>
+              <Button
+                onClick={() =>
+                  setIsOpen({
+                    ...isOpen,
+                    addModal: true,
+                  })
+                }
+                className="ml-auto"
+              >
+                新しい機能を提案する
+              </Button>
             </div>
           }
           renderItem={(item) => (
@@ -111,6 +154,12 @@ const FeatureSuggestions: NextPage = () => {
           )}
         />
       </div>
+      <SuggestionAddModal
+        form={addForm}
+        open={isOpen.addModal}
+        onFinish={handleAddSuggestion}
+        onCancel={handleCloseAddModal}
+      />
     </PrivateRoute>
   );
 };

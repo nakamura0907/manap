@@ -10,7 +10,7 @@ export type SuggestionDetail = {
   id: number;
   proposerId: number;
   title: string;
-  description: string;
+  description?: string;
   status: boolean;
   vendorApproval: boolean;
   clientApproval: boolean;
