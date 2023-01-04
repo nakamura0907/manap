@@ -3,8 +3,10 @@ import {
   addSuggestion,
   fetchSuggestionList,
   FetchSuggestionListResponse,
+  removeSuggestion,
   SuggestionAddModal,
   SuggestionAddModalFormValues,
+  SuggestionDetailModal,
 } from "@features/feature-suggestion";
 import { checkPermission } from "@common/role";
 import { isFetchError } from "@lib/fetch";
@@ -21,7 +23,7 @@ type State = {
   suggestions: FetchSuggestionListResponse["suggestions"];
   isOpen: {
     addModal: boolean;
-    detailModal: boolean;
+    detailModal?: number;
   };
 };
 
@@ -29,7 +31,7 @@ const initialState: State = {
   suggestions: [],
   isOpen: {
     addModal: false,
-    detailModal: false,
+    detailModal: undefined,
   },
 };
 
@@ -66,9 +68,28 @@ const FeatureSuggestions: NextPage = () => {
     try {
       const response = await addSuggestion(project!.id, values);
 
-      setSuggestions((prev) => [...prev, response.data]);
+      setSuggestions((prev) => [response.data, ...prev]);
       setIsOpen({ ...isOpen, addModal: false });
       addForm.resetFields();
+    } catch (error) {
+      console.log(error);
+      if (isFetchError(error) && error.response) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("新しい機能の提案に失敗しました");
+      }
+    }
+  };
+
+  /**
+   * 機能提案を削除する
+   */
+  const handleRemoveSuggestion = async (id: number) => {
+    try {
+      await removeSuggestion(project!.id, id);
+
+      setSuggestions(suggestions.filter((suggestion) => suggestion.id !== id));
+      setIsOpen({ ...isOpen, detailModal: undefined });
     } catch (error) {
       console.log(error);
       if (isFetchError(error) && error.response) {
@@ -85,6 +106,13 @@ const FeatureSuggestions: NextPage = () => {
   const handleCloseAddModal = () => {
     setIsOpen({ ...isOpen, addModal: false });
     addForm.resetFields();
+  };
+
+  /**
+   * 詳細モーダルを閉じる
+   */
+  const handleCloseDetailModal = () => {
+    setIsOpen({ ...isOpen, detailModal: undefined });
   };
 
   return (
@@ -116,6 +144,9 @@ const FeatureSuggestions: NextPage = () => {
               <List.Item.Meta
                 title={
                   <span
+                    onClick={() =>
+                      setIsOpen({ ...isOpen, detailModal: item.id })
+                    }
                     className={item.status ? "line-through text-gray-400" : ""}
                   >
                     {item.title}
@@ -159,6 +190,11 @@ const FeatureSuggestions: NextPage = () => {
         open={isOpen.addModal}
         onFinish={handleAddSuggestion}
         onCancel={handleCloseAddModal}
+      />
+      <SuggestionDetailModal
+        suggestionId={isOpen.detailModal}
+        onCancel={handleCloseDetailModal}
+        onSuggestionRemove={handleRemoveSuggestion}
       />
     </PrivateRoute>
   );
