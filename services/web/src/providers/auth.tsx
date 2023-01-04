@@ -1,4 +1,4 @@
-import { verifyToken } from "@features/auth";
+import { removeToken, verifyToken } from "@features/auth";
 import { parseCookies } from "@lib/cookie";
 import { useRouter } from "next/router";
 import React from "react";
@@ -43,7 +43,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({
       }
     })()
       .catch(() => {
-        router.push("/logout");
+        removeToken();
+        setAuth(undefined);
+        router.push("/login");
       })
       .finally(() => {
         setIsReady(true);
