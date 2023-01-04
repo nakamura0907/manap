@@ -9,6 +9,7 @@ import {
   prisma,
   PrismaClientKnownRequestError,
 } from "@/frameworks/database/prisma";
+import { now } from "@/util/date";
 import Exception from "@/util/exception/Exception";
 
 class PrismaTasksRepository implements ITasksRepository {
@@ -22,6 +23,14 @@ class PrismaTasksRepository implements ITasksRepository {
           status: task.status.value,
           due: task.due,
           priority: task.priority.value,
+        },
+      });
+      await prisma.projects.update({
+        where: {
+          id: task.projectId.value,
+        },
+        data: {
+          updated_at: now(),
         },
       });
 
@@ -77,6 +86,11 @@ class PrismaTasksRepository implements ITasksRepository {
           status: task.status.value,
           due: task.due,
           priority: task.priority.value,
+          projects: {
+            update: {
+              updated_at: now(),
+            },
+          },
         },
       });
     } catch (e) {
@@ -97,6 +111,14 @@ class PrismaTasksRepository implements ITasksRepository {
       await prisma.tasks.delete({
         where: {
           id: task.id,
+        },
+      });
+      await prisma.projects.update({
+        where: {
+          id: projectId.value,
+        },
+        data: {
+          updated_at: now(),
         },
       });
     } catch (e) {

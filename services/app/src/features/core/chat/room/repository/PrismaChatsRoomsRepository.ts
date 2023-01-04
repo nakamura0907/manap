@@ -3,6 +3,7 @@ import IChatsRoomsRepository from "@/features/core/chat/room/domain/repository/I
 import RoomName from "@/features/core/chat/room/domain/value/RoomName";
 import { GeneratedId, NoneId } from "@/features/shared/Id";
 import { prisma } from "@/frameworks/database/prisma";
+import { now } from "@/util/date";
 import Exception from "@/util/exception/Exception";
 
 class PrismaChatsRoomsRepository implements IChatsRoomsRepository {
@@ -13,6 +14,14 @@ class PrismaChatsRoomsRepository implements IChatsRoomsRepository {
           project_id: room.projectId.value,
           name: room.name.value,
           created_at: room.createdAt,
+        },
+      });
+      await prisma.projects.update({
+        where: {
+          id: room.projectId.value,
+        },
+        data: {
+          updated_at: now(),
         },
       });
 
@@ -50,6 +59,11 @@ class PrismaChatsRoomsRepository implements IChatsRoomsRepository {
         },
         data: {
           name: room.name.value,
+          projects: {
+            update: {
+              updated_at: now(),
+            },
+          },
         },
       });
     } catch (e) {
@@ -75,6 +89,14 @@ class PrismaChatsRoomsRepository implements IChatsRoomsRepository {
       await prisma.chat_rooms.delete({
         where: {
           id: roomId.value,
+        },
+      });
+      await prisma.projects.update({
+        where: {
+          id: room.project_id,
+        },
+        data: {
+          updated_at: now(),
         },
       });
     } catch (e) {
