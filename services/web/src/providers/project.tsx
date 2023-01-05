@@ -1,9 +1,7 @@
+import { FetchProjectByIdResponse } from "@common/api/projects";
 import React from "react";
 
-type Project = {
-  id: number;
-  roleId: number;
-};
+type Project = FetchProjectByIdResponse;
 
 type Context = {
   project?: Project;

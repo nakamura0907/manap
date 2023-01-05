@@ -48,10 +48,7 @@ export const ProjectPageLayout: React.FC<React.PropsWithChildren> = ({
       const prevProjectId = project?.id;
       if (projectIdNum != prevProjectId) {
         const result = await fetchById(projectIdNum);
-        setProject({
-          id: projectIdNum,
-          roleId: result.data.roleId,
-        });
+        setProject(result.data);
         console.log(
           `layout.tsx: ${prevProjectId} -> ${projectIdNum} roleId: ${result.data.roleId}}`
         );

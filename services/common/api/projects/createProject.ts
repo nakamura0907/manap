@@ -1,5 +1,6 @@
 import { Project } from "./types";
 
-export type CreateProjectRequest = Omit<Project, "id">;
+export type CreateProjectRequest = Pick<Project, "name"> &
+  Partial<Pick<Project, "description">>;
 
 export type CreateProjectResponse = Project;
