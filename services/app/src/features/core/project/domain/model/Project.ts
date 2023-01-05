@@ -3,7 +3,7 @@ import { GeneratedId, Id, NoneId } from "@/features/shared/Id";
 
 class Project<T extends Id = Id> {
   private readonly _ownerId: GeneratedId;
-  private readonly _detail: ProjectDetail;
+  private readonly _detail: ProjectDetail<T>;
 
   constructor(ownerId: GeneratedId, detail: ProjectDetail<T>) {
     this._ownerId = ownerId;

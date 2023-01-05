@@ -1,6 +1,5 @@
 import Exception from "@/util/exception/Exception";
 import Project from "./domain/model/Project";
-import ProjectDetail from "./domain/model/ProjectDetail";
 import { Request, Response, NextFunction } from "express";
 import { GeneratedId } from "@/features/shared/Id";
 import {
@@ -115,15 +114,18 @@ const projectController = (): ProjectController => {
         throw new Exception("プロジェクトを更新する権限がありません", 403);
 
       // プロジェクト更新
-      const validatedProject = ProjectDetail.create(name, description);
-      const project = validatedProject.setId(projectId);
+      const currentProject = await projectsRepository.find(projectId);
+      const updatedProject = currentProject.detail.copyWith({
+        name,
+        description,
+      });
 
-      await projectsRepository.update(project);
+      await projectsRepository.update(updatedProject);
 
       res.status(200).send({
-        id: project.id.value,
-        name: project.name.value,
-        description: project.description.value,
+        id: updatedProject.id.value,
+        name: updatedProject.name.value,
+        description: updatedProject.description.value,
       });
     })().catch(next);
   };
