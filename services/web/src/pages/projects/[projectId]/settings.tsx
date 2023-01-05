@@ -25,10 +25,10 @@ const initialState: State = {
 };
 
 const useProject = () => React.useContext(projectContext);
-const usetSetProject = () => React.useContext(setProjectContext);
+const useSetProject = () => React.useContext(setProjectContext);
 const ProjectSettings: NextPage = () => {
   const project = useProject();
-  const setProject = usetSetProject();
+  const setProject = useSetProject();
   const router = useRouter();
 
   const [form] = Form.useForm<FormValues>();
