@@ -5,6 +5,9 @@ import { GeneratedId, NoneId } from "@/features/shared/Id";
 import { prisma } from "@/frameworks/database/prisma";
 import { now } from "@/util/date";
 import { ROLE_LIST } from "@common/role";
+import Exception from "@/util/exception/Exception";
+import ProjectName from "@/features/core/project/domain/value/ProjectName";
+import ProjectDescription from "@/features/core/project/domain/value/ProjectDescription";
 
 class PrismaProjectsRepository implements IProjectsRepository {
   async create(project: Project<NoneId>) {
@@ -25,6 +28,36 @@ class PrismaProjectsRepository implements IProjectsRepository {
     });
     const id = new GeneratedId(result.id);
     return project.setId(id);
+  }
+
+  async find(projectId: GeneratedId) {
+    const result = await prisma.projects.findFirst({
+      where: {
+        id: projectId.value,
+      },
+      include: {
+        projects_members: {
+          include: {
+            users: true,
+            roles: true,
+          },
+          where: {
+            role_id: ROLE_LIST.ADMINISTRATOR.id,
+          },
+        },
+      },
+    });
+    if (!result) throw new Exception("プロジェクトが見つかりません", 404);
+    if (result.projects_members.length === 0)
+      throw new Exception("不正なプロジェクトです", 500);
+
+    const ownerId = new GeneratedId(result.projects_members[0].user_id);
+    const detail = new ProjectDetail(
+      projectId,
+      new ProjectName(result.name),
+      new ProjectDescription(result.description)
+    );
+    return new Project(ownerId, detail);
   }
 
   async update(project: ProjectDetail<GeneratedId>) {

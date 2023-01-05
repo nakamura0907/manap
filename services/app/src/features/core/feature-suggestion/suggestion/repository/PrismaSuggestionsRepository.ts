@@ -7,6 +7,7 @@ import {
   prisma,
   PrismaClientKnownRequestError,
 } from "@/frameworks/database/prisma";
+import { now } from "@/util/date";
 import Exception from "@/util/exception/Exception";
 
 class PrismaSuggestionsRepository implements ISuggestionsRepository {
@@ -20,6 +21,15 @@ class PrismaSuggestionsRepository implements ISuggestionsRepository {
           description: suggestion.description.value,
         },
       });
+      await prisma.projects.update({
+        where: {
+          id: suggestion.projectId.value,
+        },
+        data: {
+          updated_at: now(),
+        },
+      });
+
       const id = new GeneratedId(result.id);
       return suggestion.setId(id);
     } catch (e) {
@@ -75,6 +85,11 @@ class PrismaSuggestionsRepository implements ISuggestionsRepository {
           status: suggestion.status,
           vendor_approval: suggestion.vendorApproval,
           client_approval: suggestion.clientApproval,
+          projects: {
+            update: {
+              updated_at: now(),
+            },
+          },
         },
       });
     } catch (e) {
@@ -95,6 +110,14 @@ class PrismaSuggestionsRepository implements ISuggestionsRepository {
       await prisma.feature_suggestions.delete({
         where: {
           id: result.id,
+        },
+      });
+      await prisma.projects.update({
+        where: {
+          id: projectId.value,
+        },
+        data: {
+          updated_at: now(),
         },
       });
     } catch (e) {

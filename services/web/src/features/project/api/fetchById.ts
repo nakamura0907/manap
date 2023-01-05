@@ -1,13 +1,6 @@
 import fetch from "@lib/fetch";
-
-type FetchByIdResponse = {
-  id: number;
-  /**
-   * ログインユーザーの権限ID
-   */
-  roleId: number;
-};
+import { FetchProjectByIdResponse } from "@common/api/projects";
 
 export const fetchById = async (id: number) => {
-  return await fetch.get<FetchByIdResponse>(`/projects/${id}`);
+  return await fetch.get<FetchProjectByIdResponse>(`/projects/${id}`);
 };

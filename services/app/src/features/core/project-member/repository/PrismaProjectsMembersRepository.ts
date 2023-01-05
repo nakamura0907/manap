@@ -3,6 +3,7 @@ import {
   prisma,
   PrismaClientKnownRequestError,
 } from "@/frameworks/database/prisma";
+import { now } from "@/util/date";
 import Exception from "@/util/exception/Exception";
 import Member from "../domain/model/Member";
 import IProjectsMembersRepository from "../domain/repository/IProjectsMembersRepository";
@@ -19,6 +20,11 @@ class PrismaProjectsMembersRepository implements IProjectsMembersRepository {
         },
         update: {
           delete_flag: false,
+          projects: {
+            update: {
+              updated_at: now(),
+            },
+          },
         },
         create: {
           project_id: member.projectId.value,
@@ -47,6 +53,14 @@ class PrismaProjectsMembersRepository implements IProjectsMembersRepository {
       },
       data: {
         role_id: member.role.id,
+      },
+    });
+    await prisma.projects.update({
+      where: {
+        id: member.projectId.value,
+      },
+      data: {
+        updated_at: now(),
       },
     });
   }
