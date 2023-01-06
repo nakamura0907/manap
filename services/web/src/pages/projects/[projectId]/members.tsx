@@ -2,12 +2,17 @@ import type { NextPage } from "next";
 import {
   fetchMemberList,
   FetchMemberListResponse,
+  removeMember,
 } from "@features/project-member";
+import { authContext } from "@providers/auth";
+import { checkPermission } from "@common/role";
 import { isFetchError } from "@lib/fetch";
 import { PrivateRoute } from "@features/auth";
 import { projectContext } from "@providers/project";
+import Button from "@components/ui/button";
 import List from "@components/ui/list";
 import message from "@components/ui/message";
+import Modal from "@components/ui/modal";
 import React from "react";
 
 type State = {
@@ -18,8 +23,10 @@ const initialState: State = {
   members: [],
 };
 
+const useAuth = () => React.useContext(authContext);
 const useProject = () => React.useContext(projectContext);
 const Members: NextPage = () => {
+  const auth = useAuth();
   const project = useProject();
 
   const [members, setMembers] = React.useState(initialState.members);
@@ -40,6 +47,31 @@ const Members: NextPage = () => {
     });
   }, [project]);
 
+  /**
+   * メンバーを削除する
+   */
+  const handleRemove = (userId: number) => {
+    Modal.confirm({
+      title: "メンバーの削除",
+      content: "メンバーを削除しますか？",
+      onOk: async () => {
+        try {
+          await removeMember(project!.id, userId);
+
+          setMembers(members.filter((member) => member.userId !== userId));
+          message.success("メンバーを削除しました");
+        } catch (error) {
+          console.log(error);
+          if (isFetchError(error) && error.response) {
+            message.error(error.response.data.message);
+          } else {
+            message.error("メンバーの削除に失敗しました");
+          }
+        }
+      },
+    });
+  };
+
   return (
     <PrivateRoute>
       <div>
@@ -49,9 +81,22 @@ const Members: NextPage = () => {
         <List
           itemLayout="horizontal"
           dataSource={members}
+          header={
+            <div className="flex">
+              <Button className="ml-auto">新しいメンバーを追加する</Button>
+            </div>
+          }
           renderItem={(item) => (
             <List.Item key={item.userId}>
               <List.Item.Meta title={item.name} description={item.role.name} />
+              {checkPermission(project!.roleId, "member:remove", {
+                targetRoleId: item.role.id,
+              }) &&
+                auth!.userId != item.userId && (
+                  <Button danger onClick={() => handleRemove(item.userId)}>
+                    削除する
+                  </Button>
+                )}
             </List.Item>
           )}
         />

@@ -125,7 +125,7 @@ const FeatureSuggestions: NextPage = () => {
           itemLayout="horizontal"
           dataSource={suggestions}
           header={
-            <div>
+            <div className="flex">
               <Button
                 onClick={() =>
                   setIsOpen({
