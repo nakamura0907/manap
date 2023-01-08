@@ -214,3 +214,19 @@ export const checkPermission = (
 
   return dynamic(data);
 };
+
+/**
+ * 引数の権限で変更可能な権限のIDを取得
+ */
+export const getChangeableRoleIds = (roleId: number) => {
+  const roleIds = Object.values(ROLE_LIST)
+    .map((role) => role.id)
+    .filter(
+      (id) =>
+        id !== roleId &&
+        checkPermission(roleId, "member:update", {
+          targetRoleId: id,
+        })
+    );
+  return roleIds;
+};

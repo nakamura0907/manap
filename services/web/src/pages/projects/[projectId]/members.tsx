@@ -2,10 +2,11 @@ import type { NextPage } from "next";
 import {
   fetchMemberList,
   FetchMemberListResponse,
+  Member,
   removeMember,
 } from "@features/project-member";
 import { authContext } from "@providers/auth";
-import { checkPermission } from "@common/role";
+import { checkPermission, getChangeableRoleIds } from "@common/role";
 import { isFetchError } from "@lib/fetch";
 import { PrivateRoute } from "@features/auth";
 import { projectContext } from "@providers/project";
@@ -14,6 +15,8 @@ import List from "@components/ui/list";
 import message from "@components/ui/message";
 import Modal from "@components/ui/modal";
 import React from "react";
+import { FetchProjectByIdResponse } from "@common/api/projects";
+import Select from "@components/ui/select";
 
 type State = {
   members: FetchMemberListResponse["members"];
@@ -88,7 +91,10 @@ const Members: NextPage = () => {
           }
           renderItem={(item) => (
             <List.Item key={item.userId}>
-              <List.Item.Meta title={item.name} description={item.role.name} />
+              <List.Item.Meta
+                title={item.name}
+                description={<MemberRole project={project!} member={item} />}
+              />
               {checkPermission(project!.roleId, "member:remove", {
                 targetRoleId: item.role.id,
               }) &&
@@ -102,6 +108,34 @@ const Members: NextPage = () => {
         />
       </div>
     </PrivateRoute>
+  );
+};
+
+const MemberRole = ({
+  project,
+  member,
+}: {
+  project: FetchProjectByIdResponse;
+  member: Member;
+}) => {
+  // メンバーの役割を変更できない場合
+  if (
+    !checkPermission(project.roleId, "member:add", {
+      targetRoleId: member.role.id,
+    })
+  )
+    return <>{member.role.name}</>;
+
+  const changeableRoleIds = getChangeableRoleIds(project.roleId);
+  if (changeableRoleIds.length === 0) return <>{member.role.name}</>;
+
+  // TODO: セレクトボックスを作成する
+  // セレクトボックスを表示する
+  return <>{member.role.name}</>;
+  return (
+    <Select>
+      <Select.Option value={member.role.id}>{member.role.name}</Select.Option>
+    </Select>
   );
 };
 

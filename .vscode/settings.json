@@ -17,7 +17,7 @@
   "emmet.triggerExpansionOnTab": true,
   // "explorer.confirmDelete": false,
   "explorer.confirmDragAndDrop": false,
-  "files.autoSave": "onFocusChange",
+  // "files.autoSave": "onFocusChange",
   "files.encoding": "utf8",
   "files.insertFinalNewline": true,
   "files.watcherExclude": {
